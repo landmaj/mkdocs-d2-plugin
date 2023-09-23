@@ -53,19 +53,19 @@ class D2Plugin(BasePlugin[D2Config]):
         name = opts.get("name")
         if not name:
             error("Diagram name not specified! Syntax: `d2 name=diagram_name`")
-            return f'!!! failure "Diagram name not specified! Syntax: `d2 name=diagram_name`"\n\n```\n{data}\n```'
+            return f'!!! failure "Diagram name not specified! Syntax: `d2 name=diagram_name`"\n'
         try:
             scale = opts.get("scale", -1.0)
             scale = float(scale)
         except ValueError:
             error("Scale must be a float! Syntax: `d2 scale=-1.0`")
-            return f'!!! failure "Scale must be a float! Syntax: `d2 scale=1.0`"\n\n```\n{data}\n```'
+            return f'!!! failure "Scale must be a float! Syntax: `d2 scale=1.0`"\n'
         try:
             pad = opts.get("pad", 100)
             pad = int(pad)
         except ValueError:
             error("Pad must be an integer! Syntax: `d2 pad=100`")
-            return f'!!! failure "Pad must be an integer! Syntax: `d2 pad=100`"\n\n```\n{data}\n```'
+            return f'!!! failure "Pad must be an integer! Syntax: `d2 pad=100`"\n'
 
         filename = f"{name}.svg"
         filepath = f"{self._tmp_dir.name}/{filename}"
@@ -77,16 +77,23 @@ class D2Plugin(BasePlugin[D2Config]):
         if self.config.sketch:
             cmd_env["D2_SKETCH"] = "true"
 
-        subprocess.run(
-            [
-                "d2",
-                "-",
-                filepath,
-            ],
-            env=cmd_env,
-            input=data.encode(),
-            check=True,
-        )
+        try:
+            subprocess.run(
+                [
+                    "d2",
+                    "-",
+                    filepath,
+                ],
+                env=cmd_env,
+                input=data.encode(),
+                check=True,
+            )
+        except FileNotFoundError:
+            error("Failed to find d2 executable. Is it installed?")
+            return f'!!! failure "Failed to find d2 executable. Is it installed?"\n'
+        except subprocess.CalledProcessError as e:
+            error(f"Failed to generate diagram. Return code: {e.returncode}.")
+            return f'!!! failure "Failed to generate diagram. Return code: {e.returncode}."\n'
 
         mkdocs_file = File(filename, self._tmp_dir.name, self._site_dir, False)
         files.append(mkdocs_file)
