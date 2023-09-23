@@ -1,6 +1,7 @@
 import os
 import re
 import subprocess
+import tempfile
 from functools import partial
 from pathlib import Path
 
@@ -18,17 +19,20 @@ error = partial(log.error, f"{NAME}: %s")
 
 
 class D2Config(Config):
-    out_dir = config_options.Type(str, default="d2-plugin")
-
+    output = config_options.Type(str, default="assets/diagrams")
     theme = config_options.Type(int, default=0)
     sketch = config_options.Type(bool, default=False)
 
 
 class D2Plugin(BasePlugin[D2Config]):
     def on_config(self, config: MkDocsConfig) -> MkDocsConfig | None:
-        self._site_dir = Path(config["site_dir"], "assets", "diagrams")
-        self._site_url = config.get("site_url", "/")
+        self._site_dir = Path(config["site_dir"], self.config.output)
+        self._tmp_dir = tempfile.TemporaryDirectory()
         return config
+
+    def on_post_build(self, *, config: MkDocsConfig) -> None:
+        if hasattr(self, "_tmp_dir"):
+            self._tmp_dir.cleanup()
 
     def on_page_markdown(self, markdown, files, page, **_kwargs):
         def replace_block(match_obj):
@@ -64,7 +68,7 @@ class D2Plugin(BasePlugin[D2Config]):
             return f'!!! failure "Pad must be an integer! Syntax: `d2 pad=100`"\n\n```\n{data}\n```'
 
         filename = f"{name}.svg"
-        filepath = f"{self.config.out_dir}/{filename}"
+        filepath = f"{self._tmp_dir.name}/{filename}"
 
         cmd_env = os.environ.copy()
         cmd_env["D2_THEME"] = str(self.config.theme)
@@ -84,7 +88,7 @@ class D2Plugin(BasePlugin[D2Config]):
             check=True,
         )
 
-        mkdocs_file = File(filename, self.config.out_dir, self._site_dir, False)
+        mkdocs_file = File(filename, self._tmp_dir.name, self._site_dir, False)
         files.append(mkdocs_file)
 
-        return f"<img src='{self._site_url}/assets/diagrams/{mkdocs_file.url}' alt={name} />"
+        return f"<img src='/{self.config.output}/{mkdocs_file.url}' alt={name} />"
