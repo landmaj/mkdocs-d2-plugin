@@ -48,7 +48,7 @@ plugins:
   - d2:
       theme: 1
       sketch: False
-      output_dir: assets/diagrams
+      output: assets/diagrams
 ```
 
 [List of available themes](https://d2lang.com/tour/themes/)
