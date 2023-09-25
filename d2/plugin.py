@@ -16,6 +16,12 @@ info = partial(log.info, f"{NAME}: %s")
 debug = partial(log.debug, f"{NAME}: %s")
 error = partial(log.error, f"{NAME}: %s")
 
+
+pattern = re.compile(
+    rf"(?:```)(d2)((?:\s?[a-zA-Z0-9\-_]+=[a-zA-Z0-9\-_\.]+)*)\n(.*?)(?:```)",
+    flags=re.IGNORECASE + re.DOTALL,
+)
+
 template = """<div>
     <style>
         svg > a:hover {{
@@ -39,12 +45,7 @@ class D2Plugin(BasePlugin[D2Config]):
         def replace_block(match_obj):
             return self._replace_block(match_obj)
 
-        return re.sub(self.pattern, replace_block, markdown)
-
-    pattern = re.compile(
-        rf"(?:```)(d2)((?:\s?[a-zA-Z0-9\-_]+=[a-zA-Z0-9\-_\.]+)*)\n(.*?)(?:```)",
-        flags=re.IGNORECASE + re.DOTALL,
-    )
+        return re.sub(pattern, replace_block, markdown)
 
     def _replace_block(self, match_obj):
         args = match_obj.group(2)
@@ -85,8 +86,9 @@ class D2Plugin(BasePlugin[D2Config]):
         except FileNotFoundError:
             error("Failed to find d2 executable. Is it installed?")
             return f'!!! failure "Failed to find d2 executable. Is it installed?"\n'
-        except subprocess.CalledProcessError as e:
-            error(f"Failed to generate diagram. Return code: {e.returncode}.")
-            return f'!!! failure "Failed to generate diagram. Return code: {e.returncode}."\n'
 
+        if result.returncode != 0:
+            err = result.stderr.decode().replace('"', "").strip()
+            error(f"Failed to render diagram: {err}")
+            return f'!!! failure "{err}"\n\n```d2\n{data}\n```'
         return template.format(svg=result.stdout.decode())
