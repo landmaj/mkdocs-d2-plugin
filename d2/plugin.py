@@ -2,6 +2,7 @@ import os
 import re
 import subprocess
 from functools import partial
+from typing import Dict
 
 from mkdocs.config import config_options
 from mkdocs.config.base import Config
@@ -22,7 +23,7 @@ pattern = re.compile(
     flags=re.IGNORECASE + re.DOTALL,
 )
 
-template = """<div>
+templateOK = """<div>
     <style>
         svg > a:hover {{
             text-decoration: underline
@@ -32,10 +33,29 @@ template = """<div>
 </div>
 """
 
+templateErrArgs = """!!! failure inline end
+    {err}
+`d2 {args}`
+```d2
+{code}
+```
+"""
+
+templateErrCompile = """!!! failure inline end
+    {err}
+```d2
+{code}
+```
+"""
+
+options = {"theme", "sketch", "scale", "pad"}
+
 
 class D2Config(Config):
     theme = config_options.Type(int, default=0)
     sketch = config_options.Type(bool, default=False)
+    pad = config_options.Type(int, default=100)
+    scale = config_options.Type(float, default=-1.0)
 
 
 class D2Plugin(BasePlugin[D2Config]):
@@ -47,30 +67,56 @@ class D2Plugin(BasePlugin[D2Config]):
 
         return re.sub(pattern, replace_block, markdown)
 
+    def _validate_cfg(self, cfg) -> str | None:
+        try:
+            cfg["theme"] = int(cfg["theme"])
+        except ValueError:
+            return "theme must be an integer"
+
+        if not isinstance(cfg["sketch"], bool):
+            if cfg["sketch"] not in ("true", "false"):
+                return "sketch must be a boolean"
+            cfg["sketch"] = cfg["sketch"] == "true"
+
+        try:
+            cfg["pad"] = int(cfg["pad"])
+        except ValueError:
+            return "pad must be an integer"
+
+        try:
+            cfg["scale"] = float(cfg["scale"])
+        except ValueError:
+            return "scale must be a float"
+
+    def _cfg_from_args(self, args) -> Dict[str, str]:
+        cfg = {
+            "theme": self.config.theme,
+            "sketch": self.config.sketch,
+            "pad": self.config.pad,
+            "scale": self.config.scale,
+        }
+
+        opts = dict(x.split("=") for x in args.strip().split(" ")) if args else {}
+        if d := set(opts.keys()) - options:
+            error(f"Unrecognized arguments: {d}")
+        cfg.update(opts)
+
+        return cfg
+
     def _replace_block(self, match_obj):
         args = match_obj.group(2)
         data = match_obj.group(3)
 
-        opts = dict(x.split("=") for x in args.strip().split(" ")) if args else {}
-        try:
-            scale = opts.get("scale", -1.0)
-            scale = float(scale)
-        except ValueError:
-            error("Scale must be a float! Syntax: `d2 scale=-1.0`")
-            return f'!!! failure "Scale must be a float! Syntax: `d2 scale=1.0`"\n'
-        try:
-            pad = opts.get("pad", 100)
-            pad = int(pad)
-        except ValueError:
-            error("Pad must be an integer! Syntax: `d2 pad=100`")
-            return f'!!! failure "Pad must be an integer! Syntax: `d2 pad=100`"\n'
+        cfg = self._cfg_from_args(args)
+        if err := self._validate_cfg(cfg):
+            error(err)
+            return templateErrArgs.format(err=err, args=args, code=data)
 
-        cmd_env = os.environ.copy()
-        cmd_env["D2_THEME"] = str(self.config.theme)
-        cmd_env["D2_PAD"] = str(pad)
-        cmd_env["SCALE"] = str(scale)
-        if self.config.sketch:
-            cmd_env["D2_SKETCH"] = "true"
+        env = os.environ.copy()
+        env["D2_THEME"] = str(cfg["theme"])
+        env["D2_SKETCH"] = "true" if cfg["sketch"] else "false"
+        env["D2_PAD"] = str(cfg["pad"])
+        env["SCALE"] = str(cfg["scale"])
 
         try:
             result = subprocess.run(
@@ -79,7 +125,7 @@ class D2Plugin(BasePlugin[D2Config]):
                     "-",
                     "-",
                 ],
-                env=cmd_env,
+                env=env,
                 input=data.encode(),
                 capture_output=True,
             )
@@ -90,5 +136,5 @@ class D2Plugin(BasePlugin[D2Config]):
         if result.returncode != 0:
             err = result.stderr.decode().replace('"', "").strip()
             error(f"Failed to render diagram: {err}")
-            return f'!!! failure "{err}"\n\n```d2\n{data}\n```'
-        return template.format(svg=result.stdout.decode())
+            return templateErrCompile.format(err=err, code=data)
+        return templateOK.format(svg=result.stdout.decode())
