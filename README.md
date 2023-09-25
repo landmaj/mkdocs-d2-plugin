@@ -26,7 +26,7 @@ with the `d2` language tag.
 
 ### Example
 <pre>
-```d2 name=sequence pad=50 scale=0.5
+```d2
 shape: sequence_diagram
 Alice -> John: Hello John, how are you?
 Alice -> John.ack: John, can you hear me?
@@ -35,20 +35,27 @@ John -> Alice: I feel great!
 ```
 </pre>
 
-### Options
- - `name`: output file name (**required**)
- - `pad`: pixels padded around the rendered diagram (default 100, optional)
- - `scale`: e.g. 0.5 to halve the default size; -1 means that SVG's will fit to screen; etting to 1 turns off SVG fitting to screen (default -1, optional)
-
 
 ## Configuration
-The plugin can be configured in your `mkdocs.yml` file.
+The plugin can be configured globally in your `mkdocs.yml` file.
 ```yaml
 plugins:
   - d2:
       theme: 1
       sketch: False
-      output: assets/diagrams
+      pad: 100
+      scale: -1.0
 ```
+
+Or locally in a code block.
+<pre>
+```d2 theme=1 sketch=true pad=100 scale=-1.0
+shape: sequence_diagram
+Alice -> John: Hello John, how are you?
+Alice -> John.ack: John, can you hear me?
+John.ack -> Alice: Hi Alice, I can hear you!
+John -> Alice: I feel great!
+```
+</pre>
 
 [List of available themes](https://d2lang.com/tour/themes/)
