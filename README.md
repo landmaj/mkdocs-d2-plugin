@@ -5,6 +5,7 @@ generates and embeds [D2](https://d2lang.com) diagrams.
 
 ## Requirements
 * [MkDocs](https://www.mkdocs.org/) >= 1.4.0
+* [Pydantic](https://pydantic-docs.helpmanual.io/)
 * [D2](https://d2lang.com)
 
 
@@ -25,7 +26,7 @@ The plugin will automatically generate and embed D2 diagrams from code blocks
 with the `d2` language tag.
 
 ### Example
-<pre>
+````
 ```d2
 shape: sequence_diagram
 Alice -> John: Hello John, how are you?
@@ -33,29 +34,58 @@ Alice -> John.ack: John, can you hear me?
 John.ack -> Alice: Hi Alice, I can hear you!
 John -> Alice: I feel great!
 ```
-</pre>
+````
 
 
 ## Configuration
-The plugin can be configured globally in your `mkdocs.yml` file.
+The plugin can be configured in your `mkdocs.yml` file.
 ```yaml
 plugins:
   - d2:
-      theme: 1
+      executable: d2
+      layout: dagre
+      theme: 0
+      dark_theme: False
       sketch: False
       pad: 100
       scale: -1.0
+      force_appendix: False
 ```
 
-Or locally in a code block.
-<pre>
-```d2 theme=1 sketch=true pad=100 scale=-1.0
+Run `d2 --help` for more information about the options.
+
+Everything (except executable path) can be overriden locally.
+````
+```d2 sketch=true force_appendix=True
 shape: sequence_diagram
 Alice -> John: Hello John, how are you?
 Alice -> John.ack: John, can you hear me?
 John.ack -> Alice: Hi Alice, I can hear you!
 John -> Alice: I feel great!
 ```
-</pre>
+````
 
 [List of available themes](https://d2lang.com/tour/themes/)
+
+
+### \<rant\>
+Why this fenced code block format?
+````
+```d2 key=value
+[...]
+```
+````
+MkDocs uses [python-markdown](https://python-markdown.github.io/extensions/fenced_code_blocks/)
+library, which expects key-value pairs in a following format:
+````
+```{ .d2 key="value" }
+[...]
+```
+````
+
+This breaks syntax highlighting in most editors. The format used by this plugin
+breaks python-markdown library instead, however the entire code block is 
+replaced anyway, so it doesn't matter. And according to 
+[CommonMark specification](https://spec.commonmark.org/0.30/#info-string)
+it is a valid Markdown.
+### \</rant\>

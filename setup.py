@@ -8,7 +8,7 @@ with open(PROJ_DIR / "README.md", encoding="utf-8") as f:
 
 setup(
     name="mkdocs-d2-plugin",
-    version="0.1.0",
+    version="0.2.0",
     description="MkDocs plugin for D2",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -18,7 +18,7 @@ setup(
     author_email="michal@wielunski.net",
     license="MIT",
     python_requires=">=3.8",
-    install_requires=["mkdocs>=1.4.0"],
+    install_requires=["mkdocs>=1.4.0", "pydantic"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -33,5 +33,5 @@ setup(
         "Programming Language :: Python :: 3.11",
     ],
     packages=find_packages(),
-    entry_points={"mkdocs.plugins": ["d2 = d2.plugin:D2Plugin"]},
+    entry_points={"mkdocs.plugins": ["d2 = d2.plugin:Plugin"]},
 )
