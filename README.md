@@ -69,8 +69,7 @@ John -> Alice: I feel great!
 
 ## Example
 You can find example app in the `example` directory.
-
-![exampe](example/example.png)
+Live version is available [here](https://landmaj.github.io/mkdocs-d2-plugin/).
 
 To run in locally:
 ```bash

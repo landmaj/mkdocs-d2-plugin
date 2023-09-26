@@ -1,0 +1,31 @@
+name: Deploy Example
+on: [push]
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - run: curl -fsSL https://d2lang.com/install.sh | sh -s --
+      - name: Build docs
+        working-directory: ./example
+        run: |
+          pip install -r requirements.txt
+          mkdocs build 
+      - uses: actions/upload-pages-artifact@v1
+        with:
+          path: 'example/site'
+      - id: deployment
+        uses: actions/deploy-pages@v1
