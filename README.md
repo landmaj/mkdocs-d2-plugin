@@ -25,7 +25,6 @@ plugins:
 The plugin will automatically generate and embed D2 diagrams from code blocks
 with the `d2` language tag.
 
-### Example
 ````
 ```d2
 shape: sequence_diagram
@@ -66,6 +65,28 @@ John -> Alice: I feel great!
 ````
 
 [List of available themes](https://d2lang.com/tour/themes/)
+
+
+## Example
+You can find example app in the `example` directory.
+
+![exampe](example/example.png)
+
+To run in locally:
+```bash
+cd example
+python3 -m venv .venv
+source .venv/bin/activate
+pip install mkdocs-material mkdocs-d2-plugin
+mkdocs serve
+```
+
+To run it using Docker:
+```bash
+cd example
+docker build --tag mkdocs-d2-plugin:latest .
+docker run --rm -it -p 8000:8000 -v ${PWD}:/docs mkdocs-d2-plugin:latest
+```
 
 
 ### \<rant\>

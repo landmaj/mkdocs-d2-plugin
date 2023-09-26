@@ -8,7 +8,7 @@ with open(PROJ_DIR / "README.md", encoding="utf-8") as f:
 
 setup(
     name="mkdocs-d2-plugin",
-    version="0.2.0",
+    version="0.2.1",
     description="MkDocs plugin for D2",
     long_description=long_description,
     long_description_content_type="text/markdown",
