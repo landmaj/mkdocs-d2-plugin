@@ -48,7 +48,10 @@ plugin->md: replace fenced code block\nwith inlined svg
 ```
 shape: sequence_diagram
 
-md: Markdown
+md: Markdown {
+  link: "#source"
+  tooltip: "Click on me to navigate to diagram source"
+}
 mkdocs: MkDocs {
   link: https://www.mkdocs.org
 }
