@@ -17,7 +17,7 @@ You can use links to redirect users to external resources or other pages/section
 shape: sequence_diagram
 
 md: Markdown {
-  link: "#Source"
+  link: "#source"
   tooltip: "Click on me to navigate to diagram source"
 }
 mkdocs: MkDocs {
@@ -45,8 +45,7 @@ plugin->md: replace fenced code block\nwith inlined svg
 
 ## Source
 
-````
-```d2 pad=30
+```
 shape: sequence_diagram
 
 md: Markdown
@@ -72,4 +71,3 @@ subprocess: {
 
 plugin->md: replace fenced code block\nwith inlined svg
 ```
-````
