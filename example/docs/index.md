@@ -3,19 +3,73 @@ hide:
   - navigation
 ---
 
-```d2 pad=30 scale=1.5 force_appendix=True
+# mkdocs-d2-plugin
+
+## Summary
+
+To add diagrams to your documentation, place them in fenced code blocks with the language `d2`. The plugin will compile the diagram and replace the fenced code block with an inlined svg.
+
+You can use links to redirect users to external resources or other pages/sections of your documentation.
+
+## Diagram
+
+```d2 pad=30
 shape: sequence_diagram
 
-Alice {
-  link: https://en.wikipedia.org/wiki/Alice%27s_Adventures_in_Wonderland
+md: Markdown {
+  link: "#Source"
+  tooltip: "Click on me to navigate to diagram source"
+}
+mkdocs: MkDocs {
+  link: https://www.mkdocs.org
+}
+plugin: mkdocs-d2-plugin {
+  link: https://github.com/landmaj/mkdocs-d2-plugin
+}
+d2: D2 {
+  link: https://d2lang.com
 }
 
-John {
-  tooltip: John Doe
+mkdocs->mkdocs: build/serve
+mkdocs->plugin: markdown files
+plugin->md: regex
+
+subprocess: {
+  link: https://docs.python.org/3/library/subprocess.html
+  plugin->d2.sub: compile
+  d2.sub->plugin: svg
 }
 
-Alice -> John: Hello John, how are you?
-Alice -> John.ack: John, can you hear me?
-John.ack -> Alice: Hi Alice, I can hear you!
-John -> Alice: I feel great!
+plugin->md: replace fenced code block\nwith inlined svg
 ```
+
+## Source
+
+````
+```d2 pad=30
+shape: sequence_diagram
+
+md: Markdown
+mkdocs: MkDocs {
+  link: https://www.mkdocs.org
+}
+plugin: mkdocs-d2-plugin {
+  link: https://github.com/landmaj/mkdocs-d2-plugin
+}
+d2: D2 {
+  link: https://d2lang.com
+}
+
+mkdocs->mkdocs: build/serve
+mkdocs->plugin: markdown files
+plugin->md: regex
+
+subprocess: {
+  link: https://docs.python.org/3/library/subprocess.html
+  plugin->d2.sub: compile
+  d2.sub->plugin: svg
+}
+
+plugin->md: replace fenced code block\nwith inlined svg
+```
+````
