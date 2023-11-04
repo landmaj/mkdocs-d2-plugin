@@ -1,17 +1,16 @@
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.plugins import BasePlugin
 
-from d2.config import PluginConfig
 from d2.block import Renderer
+from d2.config import PluginConfig
 
 
 class Plugin(BasePlugin[PluginConfig]):
     def on_config(self, config: MkDocsConfig) -> MkDocsConfig | None:
         markdown_extensions = config.setdefault("markdown_extensions", [])
-        if "pymdownx.superfences" not in markdown_extensions:
-            markdown_extensions.append("pymdownx.superfences")
-        if "d2_img" not in markdown_extensions:
-            markdown_extensions.append("d2_img")
+        for ext in {"pymdownx.superfences", "attr_list", "d2_img"}:
+            if ext not in markdown_extensions:
+                markdown_extensions.append(ext)
 
         mdx_configs = config.setdefault("mdx_configs", {})
 
