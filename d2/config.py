@@ -17,7 +17,7 @@ class PluginConfig(Config):
     scale = config_options.Type(float, default=-1.0)
     force_appendix = config_options.Type(bool, default=False)
 
-    def dict(self):
+    def d2_config(self):
         _dict = {}
         for k, v in self.items():
             if k in {"executable"}:
@@ -34,8 +34,6 @@ class D2Config(BaseModel, extra="forbid"):
     pad: int
     scale: float
     force_appendix: bool
-
-    render: bool = True
 
     def env(self) -> Dict[str, str]:
         e = os.environ.copy()

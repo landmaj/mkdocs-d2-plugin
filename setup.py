@@ -8,7 +8,7 @@ with open(PROJ_DIR / "README.md", encoding="utf-8") as f:
 
 setup(
     name="mkdocs-d2-plugin",
-    version="0.3.0",
+    version="0.4.0",
     description="MkDocs plugin for D2",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -33,5 +33,8 @@ setup(
         "Programming Language :: Python :: 3.11",
     ],
     packages=find_packages(),
-    entry_points={"mkdocs.plugins": ["d2 = d2.plugin:Plugin"]},
+    entry_points={
+        "mkdocs.plugins": ["d2 = d2.plugin:Plugin"],
+        "markdown.extensions": ["d2_img = d2.img:D2ImgExtension"],
+    },
 )

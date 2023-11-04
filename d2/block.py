@@ -1,18 +1,12 @@
 import subprocess
-from functools import partial
 from typing import Any
 
 from markdown import Markdown
-from mkdocs.plugins import log
 from pydantic import ValidationError
 from pymdownx.superfences import fence_code_format
 
+from d2 import error, info
 from d2.config import D2Config, PluginConfig
-
-NAME = "mkdocs-d2-plugin"
-
-info = partial(log.info, f"{NAME}: %s")
-error = partial(log.error, f"{NAME}: %s")
 
 
 class Renderer:
@@ -27,7 +21,9 @@ class Renderer:
         attrs: dict[str, Any],
         md: Markdown,
     ) -> bool:
-        cfg = self.global_config.dict()
+        options["render"] = inputs.pop("render", True)
+
+        cfg = self.global_config.d2_config()
         cfg.update(**inputs)
         try:
             cfg = D2Config(**cfg)
@@ -35,11 +31,7 @@ class Renderer:
             error(e)
             return False
 
-        if cfg.render:
-            options["render"] = True
-            options["env"] = cfg.env()
-        else:
-            options["render"] = False
+        options["env"] = cfg.env()
         return True
 
     def formatter(
