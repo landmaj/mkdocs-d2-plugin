@@ -13,7 +13,7 @@ You can use links to redirect users to external resources or other pages/section
 
 ## Diagram
 
-```d2 pad=30
+```d2 pad="30"
 shape: sequence_diagram
 
 md: Markdown {
@@ -45,7 +45,7 @@ plugin->md: replace fenced code block\nwith inlined svg
 
 ## Source
 
-```
+```d2 render="False"
 shape: sequence_diagram
 
 md: Markdown {
