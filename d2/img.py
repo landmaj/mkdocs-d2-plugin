@@ -22,7 +22,7 @@ class D2ImgTreeprocessor(Treeprocessor):
         for elem in root.iter("img"):
             src = Path(elem.get("src", ""))
             if src.suffix == ".d2":
-                diagram = Path(self.base_dir, src)
+                diagram = Path(self.base_dir, src).resolve()
                 if not diagram.exists():
                     error(f"File not found: {diagram}")
                     continue

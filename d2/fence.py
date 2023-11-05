@@ -9,7 +9,7 @@ from d2 import error, info
 from d2.config import D2Config, PluginConfig
 
 
-class Renderer:
+class D2CustomFence:
     def __init__(self, config: PluginConfig) -> None:
         self.global_config = config
 
@@ -21,7 +21,8 @@ class Renderer:
         attrs: dict[str, Any],
         md: Markdown,
     ) -> bool:
-        options["render"] = inputs.pop("render", True)
+        options["render"] = falsy(inputs.pop("render", "True"))
+        print(options["render"])
 
         cfg = self.global_config.d2_config()
         cfg.update(**inputs)
@@ -79,3 +80,9 @@ class Renderer:
 
         svg = result.stdout.decode()
         return f"<div> <style> svg>a:hover {{ text-decoration: underline }} </style> {svg} </div>"
+
+
+def falsy(value: str) -> bool:
+    if value.lower() in {"0", "false", "no", "off"}:
+        return False
+    return True

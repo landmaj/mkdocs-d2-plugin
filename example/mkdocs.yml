@@ -1,9 +1,0 @@
-site_name: mkdocs-d2-plugin
-
-plugins:
-  - d2:
-      theme: 3
-      sketch: True
-
-theme:
-  name: material

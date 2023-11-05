@@ -1,0 +1,19 @@
+site_name: mkdocs-d2-plugin
+
+repo_url: https://github.com/landmaj/mkdocs-d2-plugin/
+repo_name: landmaj/mkdocs-d2-plugin
+
+plugins:
+  - d2:
+      theme: 3
+      sketch: True
+
+theme:
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Home: "index.md"
+  - Usage: "guide/usage.md"
+  - Configuration: "guide/configuration.md"

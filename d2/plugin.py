@@ -1,7 +1,8 @@
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.plugins import BasePlugin
+from mkdocs.utils.yaml import RelativeDirPlaceholder
 
-from d2.block import Renderer
+from d2.fence import D2CustomFence
 from d2.config import PluginConfig
 
 
@@ -16,7 +17,7 @@ class Plugin(BasePlugin[PluginConfig]):
 
         superfences = mdx_configs.setdefault("pymdownx.superfences", {})
         custom_fences = superfences.setdefault("custom_fences", [])
-        f = Renderer(self.config)
+        f = D2CustomFence(self.config)
         custom_fences.append(
             {
                 "name": "d2",
@@ -27,7 +28,7 @@ class Plugin(BasePlugin[PluginConfig]):
         )
 
         mdx_configs["d2_img"] = {
-            "base_dir": config.docs_dir,
+            "base_dir": RelativeDirPlaceholder(config),
             "plugin_config": self.config,
         }
 

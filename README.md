@@ -2,9 +2,12 @@
 
 A plugin for embedding D2 diagrams in MkDocs.
 
+**Documentation and live demo can be found
+[here](https://landmaj.github.io/mkdocs-d2-plugin/).**
+
 ## Requirements
 
-* [MkDocs](https://www.mkdocs.org/) >= 1.4.0
+* [MkDocs](https://www.mkdocs.org/) >= 1.5.0
 * [D2](https://d2lang.com)
 
 ## Installation
@@ -24,14 +27,6 @@ plugins:
 
 ## Usage
 
-There are two ways to use the plugin:
-
-* fenced code block
-* image tag
-
-The end result is exactly the same, so which one you choose is a matter of
-personal preference.
-
 ### Fenced code block
 
 ````md
@@ -50,73 +45,15 @@ John -> Alice: I feel great!
 ![Diagram](diagram.d2)
 ```
 
-Only files with `.d2` extension are processed.
+## Demo app
 
-## Configuration
-
-The plugin can be configured in your `mkdocs.yml` file.
-
-```yaml
-plugins:
-  - d2:
-      executable: d2
-      layout: dagre
-      theme: 0
-      dark_theme: False
-      sketch: False
-      pad: 100
-      scale: -1.0
-      force_appendix: False
-```
-
-Run `d2 --help` for more information about the options.
-
-Everything (except executable path) can be overriden locally.
-
-### Fenced code block
-
-````md
-```d2 sketch="True" pad="30"
-shape: sequence_diagram
-Alice -> John: Hello John, how are you?
-Alice -> John.ack: John, can you hear me?
-John.ack -> Alice: Hi Alice, I can hear you!
-John -> Alice: I feel great!
-```
-````
-
-Quotes around values are mandatory.
-
-There is one special option, available only in fenced code blocks:
-
-````md
-```d2 render="False"
-Bob -> Alice
-```
-````
-
-This option disables rendering of the diagram, but still allows you to use
-`d2` language tag to highlight the code.
-
-### Image tag
-
-```md
-![Diagram](diagram.d2){sketch="True" pad="30")
-```
-
-Contrary to fenced code blocks, quotes around values are optional. However
-**white space before opening brace is not allowed**. Blame
-[attr_list](https://python-markdown.github.io/extensions/attr_list/).
-
-## Example
-
-You can find example app in the `example` directory.
+You can find demo app in the `docs` directory.
 Live version is available [here](https://landmaj.github.io/mkdocs-d2-plugin/).
 
 To run in locally:
 
 ```bash
-cd example
+cd docs
 python3 -m venv .venv
 source .venv/bin/activate
 pip install mkdocs-material mkdocs-d2-plugin
@@ -126,13 +63,7 @@ mkdocs serve
 To run it using Docker:
 
 ```bash
-cd example
+cd docs
 docker build --tag mkdocs-d2-plugin:latest .
 docker run --rm -it -p 8000:8000 -v ${PWD}:/docs mkdocs-d2-plugin:latest
 ```
-
-## Known issues I plan to fix
-
-* [Layered diagrams](https://d2lang.com/tour/composition/) (animations) are not supported.
-  D2 does not allow outputing such diagrams to stdout.
-* Image tags require paths relative to base docs directory.
