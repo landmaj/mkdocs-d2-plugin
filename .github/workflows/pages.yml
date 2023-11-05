@@ -1,4 +1,4 @@
-name: Deploy Example
+name: Deploy Demo
 on: [push]
 permissions:
   contents: read
@@ -20,12 +20,12 @@ jobs:
           python-version: 3.x
       - run: curl -fsSL https://d2lang.com/install.sh | sh -s --
       - name: Build docs
-        working-directory: ./example
+        working-directory: ./docs
         run: |
           pip install -r requirements.txt
-          mkdocs build 
+          mkdocs build
       - uses: actions/upload-pages-artifact@v1
         with:
-          path: 'example/site'
+          path: "docs/site"
       - id: deployment
         uses: actions/deploy-pages@v1
