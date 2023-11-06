@@ -1,4 +1,3 @@
-import os
 from typing import Dict
 
 from mkdocs.config import config_options
@@ -8,6 +7,8 @@ from pydantic import BaseModel
 
 class PluginConfig(Config):
     executable = config_options.Type(str, default="d2")
+    cache = config_options.Type(bool, default=True)
+    cache_dir = config_options.Type(str, default=".cache/plugin/d2")
 
     layout = config_options.Type(str, default="dagre")
     theme = config_options.Type(int, default=0)
@@ -20,7 +21,7 @@ class PluginConfig(Config):
     def d2_config(self):
         _dict = {}
         for k, v in self.items():
-            if k in {"executable"}:
+            if k in {"executable", "cache", "cache_dir"}:
                 continue
             _dict[k] = v
         return _dict
@@ -36,16 +37,12 @@ class D2Config(BaseModel, extra="forbid"):
     force_appendix: bool
 
     def env(self) -> Dict[str, str]:
-        e = os.environ.copy()
-        e.update(
-            {
-                "D2_LAYOUT": self.layout,
-                "D2_THEME": str(self.theme),
-                "D2_DARK_THEME": str(self.dark_theme),
-                "D2_SKETCH": "true" if self.sketch else "false",
-                "D2_PAD": str(self.pad),
-                "SCALE": str(self.scale),
-                "D2_FORCE_APPENDIX": "true" if self.force_appendix else "false",
-            }
-        )
-        return e
+        return {
+            "D2_LAYOUT": self.layout,
+            "D2_THEME": str(self.theme),
+            "D2_DARK_THEME": str(self.dark_theme),
+            "D2_SKETCH": "true" if self.sketch else "false",
+            "D2_PAD": str(self.pad),
+            "SCALE": str(self.scale),
+            "D2_FORCE_APPENDIX": "true" if self.force_appendix else "false",
+        }

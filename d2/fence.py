@@ -1,16 +1,21 @@
-from typing import Any
+from typing import Any, Dict
 
 from markdown import Markdown
 from pydantic import ValidationError
 from pymdownx.superfences import fence_code_format
 
-from d2 import error, render
-from d2.config import D2Config, PluginConfig
+from d2 import Renderer, error
+from d2.config import D2Config
 
 
 class D2CustomFence:
-    def __init__(self, config: PluginConfig) -> None:
-        self.global_config = config
+    def __init__(
+        self,
+        config: Dict[str, Any],
+        renderer: Renderer,
+    ) -> None:
+        self.config = config
+        self.renderer = renderer
 
     def validator(
         self,
@@ -22,7 +27,7 @@ class D2CustomFence:
     ) -> bool:
         options["render"] = falsy(inputs.pop("render", "True"))
 
-        cfg = self.global_config.d2_config()
+        cfg = self.config.copy()
         cfg.update(**inputs)
         try:
             cfg = D2Config(**cfg)
@@ -47,9 +52,7 @@ class D2CustomFence:
                 source, language, class_name, options, md, **kwargs
             )
 
-        result, ok = render(
-            self.global_config.executable, source.encode(), options["env"]
-        )
+        result, ok = self.renderer(source.encode(), options["env"])
         if not ok:
             error(result)
             return fence_code_format(

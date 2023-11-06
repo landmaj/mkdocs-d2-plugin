@@ -15,3 +15,7 @@ build/
 # Virtual environment
 venv/
 .venv/
+
+## MkDocs
+.cache/
+site

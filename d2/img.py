@@ -7,14 +7,21 @@ from markdown import Extension, Markdown
 from markdown.treeprocessors import Treeprocessor
 from pydantic import ValidationError
 
-from d2 import error, render, warning
-from d2.config import D2Config, PluginConfig
+from d2 import Renderer, error, warning
+from d2.config import D2Config
 
 
 class D2ImgTreeprocessor(Treeprocessor):
-    def __init__(self, md: Markdown, cfg: Dict[str, Any]):
-        self.base_dir = cfg["base_dir"]
-        self.global_config = cfg["plugin_config"]
+    def __init__(
+        self,
+        md: Markdown,
+        base_dir: str,
+        config: Dict[str, Any],
+        renderer: Renderer,
+    ):
+        self.base_dir = base_dir
+        self.config = config
+        self.renderer = renderer
         super().__init__(md)
 
     def run(self, root: etree.Element) -> etree.Element | None:
@@ -32,7 +39,7 @@ class D2ImgTreeprocessor(Treeprocessor):
                     warning(f"{src}: empty diagram file")
                     continue
 
-                cfg = self.global_config.d2_config()
+                cfg = self.config.copy()
                 cfg.update(elem.attrib)
                 cfg.pop("src")
                 cfg.pop("alt")
@@ -43,7 +50,7 @@ class D2ImgTreeprocessor(Treeprocessor):
                     error(e)
                     continue
 
-                result, ok = render(self.global_config.executable, source, cfg.env())
+                result, ok = self.renderer(source, cfg.env())
                 if not ok:
                     error(result)
                     continue
@@ -61,12 +68,16 @@ class D2ImgExtension(Extension):
     def __init__(self, **kwargs):
         self.config = {
             "base_dir": ["", "base directory for diagrams"],
-            "plugin_config": [PluginConfig(), "global configuration"],
+            "config": [dict(), "global configuration"],
+            "renderer": [Renderer, "render function"],
         }
         super().__init__(**kwargs)
 
     def extendMarkdown(self, md: Markdown):
         md.registerExtension(self)
+        cfg = self.getConfigs()
         md.treeprocessors.register(
-            D2ImgTreeprocessor(md, self.getConfigs()), "d2_img", 7
+            D2ImgTreeprocessor(md, cfg["base_dir"], cfg["config"], cfg["renderer"]),
+            "d2_img",
+            7,
         )
