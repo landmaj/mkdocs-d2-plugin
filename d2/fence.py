@@ -5,7 +5,7 @@ from markdown import Markdown
 from pydantic import ValidationError
 from pymdownx.superfences import fence_code_format
 
-from d2 import error, info
+from d2 import error
 from d2.config import D2Config, PluginConfig
 
 
@@ -22,7 +22,6 @@ class D2CustomFence:
         md: Markdown,
     ) -> bool:
         options["render"] = falsy(inputs.pop("render", "True"))
-        print(options["render"])
 
         cfg = self.global_config.d2_config()
         cfg.update(**inputs)
@@ -45,7 +44,6 @@ class D2CustomFence:
         **kwargs: Any,
     ) -> str:
         if not options["render"]:
-            info("Skipping rendering")
             return fence_code_format(
                 source, language, class_name, options, md, **kwargs
             )
