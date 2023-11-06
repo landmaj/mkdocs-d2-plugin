@@ -88,7 +88,7 @@ Image tags use [attr_list](https://python-markdown.github.io/extensions/attr_lis
 extension to specify configuration options.
 
 ```md
-![Diagram](diagram.d2){sketch="True" pad="30")
+![Diagram](diagram.d2){sketch="True" pad="30"}
 ```
 
 Contrary to fenced code blocks, quotes around values are optional. However
@@ -100,7 +100,7 @@ se no error but the diagram will be rendered with global configuration only.
 ##### Padding and scale
 
 ```md
-![Cloud](cloud.d2){pad="30" scale="0.8)
+![Cloud](cloud.d2){pad="30" scale="0.8}
 ```
 
 ![Cloud](cloud.d2){pad="30" scale="0.8"}
@@ -108,7 +108,7 @@ se no error but the diagram will be rendered with global configuration only.
 ##### Theme and layout
 
 ```md
-![Cloud](cloud.d2){theme=101 layout=elk)
+![Cloud](cloud.d2){theme=101 layout=elk}
 ```
 
 ![Cloud](cloud.d2){theme=101 layout=elk}
