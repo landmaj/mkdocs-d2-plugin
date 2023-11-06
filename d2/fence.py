@@ -1,4 +1,3 @@
-import subprocess
 from typing import Any
 
 from markdown import Markdown

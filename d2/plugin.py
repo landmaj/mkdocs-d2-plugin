@@ -2,8 +2,8 @@ from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.plugins import BasePlugin
 from mkdocs.utils.yaml import RelativeDirPlaceholder
 
-from d2.fence import D2CustomFence
 from d2.config import PluginConfig
+from d2.fence import D2CustomFence
 
 
 class Plugin(BasePlugin[PluginConfig]):

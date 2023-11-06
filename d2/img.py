@@ -1,4 +1,3 @@
-import subprocess
 import xml.etree.ElementTree as etree
 from io import StringIO
 from pathlib import Path
