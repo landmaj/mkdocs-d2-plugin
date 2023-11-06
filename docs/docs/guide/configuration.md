@@ -23,6 +23,10 @@ plugins:
 
 If an option is not specified, default value (seen above) will be used.
 
+Run `d2 --help` for more information about the options.
+
+### Cache
+
 Caching is enabled by default. It is recommended to keep it enabled to
 speed up the build process. By default, cache is stored in `.cache`
 directory, similar to other MkDocs plugins. For this reason it's recommended
@@ -30,8 +34,6 @@ to add `.cache` to `.gitignore` file.
 
 If you want to pregenerate cache and use it on a different machine, make
 sure both systems use the same [backend](https://docs.python.org/3/library/dbm.html).
-
-Run `d2 --help` for more information about the options.
 
 ## Local config
 
