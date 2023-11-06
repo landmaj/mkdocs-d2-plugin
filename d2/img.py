@@ -8,7 +8,7 @@ from markdown import Extension, Markdown
 from markdown.treeprocessors import Treeprocessor
 from pydantic import ValidationError
 
-from d2 import error, warning
+from d2 import error, render, warning
 from d2.config import D2Config, PluginConfig
 
 
@@ -44,31 +44,12 @@ class D2ImgTreeprocessor(Treeprocessor):
                     error(e)
                     continue
 
-                try:
-                    result = subprocess.run(
-                        [
-                            self.global_config.executable,
-                            "-",
-                            "-",
-                        ],
-                        env=cfg.env(),
-                        input=source,
-                        capture_output=True,
-                    )
-                except FileNotFoundError:
-                    error("Failed to find d2 executable. Is it installed?")
-                    continue
-                except Exception as e:
-                    error(e)
+                result, ok = render(self.global_config.executable, source, cfg.env())
+                if not ok:
+                    error(result)
                     continue
 
-                stdout = result.stdout.decode().strip()
-
-                if result.returncode != 0:
-                    error(stdout)
-                    continue
-
-                svg = etree.iterparse(StringIO(stdout))
+                svg = etree.iterparse(StringIO(result))
                 for _, el in svg:
                     # strip namespace
                     _, _, el.tag = el.tag.rpartition("}")

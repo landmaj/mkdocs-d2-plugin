@@ -5,7 +5,7 @@ from markdown import Markdown
 from pydantic import ValidationError
 from pymdownx.superfences import fence_code_format
 
-from d2 import error
+from d2 import error, render
 from d2.config import D2Config, PluginConfig
 
 
@@ -48,36 +48,16 @@ class D2CustomFence:
                 source, language, class_name, options, md, **kwargs
             )
 
-        try:
-            result = subprocess.run(
-                [
-                    self.global_config.executable,
-                    "-",
-                    "-",
-                ],
-                env=options["env"],
-                input=source.encode(),
-                capture_output=True,
-            )
-        except FileNotFoundError:
-            error("Failed to find d2 executable. Is it installed?")
-            return fence_code_format(
-                source, language, class_name, options, md, **kwargs
-            )
-        except Exception as e:
-            error(e)
+        result, ok = render(
+            self.global_config.executable, source.encode(), options["env"]
+        )
+        if not ok:
+            error(result)
             return fence_code_format(
                 source, language, class_name, options, md, **kwargs
             )
 
-        if result.returncode != 0:
-            error(result.stderr.decode().strip())
-            return fence_code_format(
-                source, language, class_name, options, md, **kwargs
-            )
-
-        svg = result.stdout.decode()
-        return f"<div> <style> svg>a:hover {{ text-decoration: underline }} </style> {svg} </div>"
+        return f"<div><style>svg>a:hover {{ text-decoration: underline }}</style>{result}</div>"
 
 
 def falsy(value: str) -> bool:
