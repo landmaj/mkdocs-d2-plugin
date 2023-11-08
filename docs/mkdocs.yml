@@ -6,12 +6,15 @@ repo_name: landmaj/mkdocs-d2-plugin
 plugins:
   - d2:
       theme: 3
+      dark_theme: 200
       sketch: True
 
 theme:
   name: material
   icon:
     repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme)"
 
 nav:
   - Home: "index.md"

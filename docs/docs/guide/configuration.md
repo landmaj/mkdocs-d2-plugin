@@ -14,7 +14,7 @@ plugins:
       cache_dir: .config/plugin/d2
       layout: dagre
       theme: 0
-      dark_theme: False
+      dark_theme: -1
       sketch: False
       pad: 100
       scale: -1.0
