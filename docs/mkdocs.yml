@@ -8,6 +8,9 @@ plugins:
       theme: 3
       sketch: True
 
+markdown_extensions:
+  - admonition
+
 theme:
   name: material
   icon:
