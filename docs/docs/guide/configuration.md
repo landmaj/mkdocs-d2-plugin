@@ -112,14 +112,6 @@ se no error but the diagram will be rendered with global configuration only.
 
 #### Examples
 
-##### Padding and scale
-
-```md
-![Cloud](cloud.d2){pad="30" scale="0.8}
-```
-
-![Cloud](cloud.d2){pad="30" scale="0.8"}
-
 ##### Theme and layout
 
 ```md
@@ -127,3 +119,14 @@ se no error but the diagram will be rendered with global configuration only.
 ```
 
 ![Cloud](cloud.d2){theme=101 layout=elk}
+
+##### Dark theme
+
+!!! info
+    Change system theme to light/dark to see the effect.
+
+```md
+![Cloud](cloud.d2){dark_theme="200"}
+```
+
+![Cloud](cloud.d2){dark_theme="200"}
