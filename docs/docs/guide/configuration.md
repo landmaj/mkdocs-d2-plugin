@@ -123,10 +123,10 @@ se no error but the diagram will be rendered with global configuration only.
 ##### Dark theme
 
 ```md
-![Cloud](cloud.d2){dark_theme="200"}
+![Cloud](cloud.d2){dark_theme="201"}
 ```
 
 !!! info
     Change system theme to light/dark to see the effect.
 
-![Cloud](cloud.d2){dark_theme="200"}
+![Cloud](cloud.d2){dark_theme="201"}
