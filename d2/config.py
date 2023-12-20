@@ -36,13 +36,16 @@ class D2Config(BaseModel, extra="forbid"):
     scale: float
     force_appendix: bool
 
-    def env(self) -> Dict[str, str]:
-        return {
-            "D2_LAYOUT": self.layout,
-            "D2_THEME": str(self.theme),
-            "D2_DARK_THEME": str(self.dark_theme),
-            "D2_SKETCH": "true" if self.sketch else "false",
-            "D2_PAD": str(self.pad),
-            "SCALE": str(self.scale),
-            "D2_FORCE_APPENDIX": "true" if self.force_appendix else "false",
-        }
+    def env(self) -> list[str]:
+        opts = [
+            "--layout", self.layout,
+            "--theme", str(self.theme),
+            "--dark-theme", str(self.dark_theme),
+            "--pad", str(self.pad),
+            "--scale", str(self.scale)
+        ]
+
+        opts = opts + [ "--sketch" ] if self.sketch else opts
+        opts = opts + [ "--force-appendix" ] if self.force_appendix else opts
+
+        return opts
