@@ -65,25 +65,20 @@ def render(
     executable: str,
     cache: MutableMapping[bytes, bytes] | None,
     source: bytes,
-    env: Dict[str, str],
+    env: list[str],
 ) -> Tuple[str, bool]:
     key = ""
     if cache is not None:
-        key = source.hex()
-        for k, v in env.items():
-            key = f"{key}.{k}={v}"
-        key = sha1(key.encode()).digest()
+        brute_key = f"{source.hex()}.{env}"
+        key = sha1(brute_key.encode()).digest()
         if key in cache:
             return cache[key].decode(), True
+    
+    process = [ executable ] + env + [ "-", "-" ]
 
     try:
         result = subprocess.run(
-            [
-                executable,
-                "-",
-                "-",
-            ],
-            env={**os.environ, **env},
+            process,
             input=source,
             capture_output=True,
         )
