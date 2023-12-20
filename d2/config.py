@@ -17,6 +17,7 @@ class PluginConfig(Config):
     pad = config_options.Type(int, default=100)
     scale = config_options.Type(float, default=-1.0)
     force_appendix = config_options.Type(bool, default=False)
+    target = config_options.Type(str, default="\'\'")
 
     def d2_config(self):
         _dict = {}
@@ -35,6 +36,7 @@ class D2Config(BaseModel, extra="forbid"):
     pad: int
     scale: float
     force_appendix: bool
+    target: str
 
     def env(self) -> list[str]:
         opts = [
@@ -42,7 +44,8 @@ class D2Config(BaseModel, extra="forbid"):
             "--theme", str(self.theme),
             "--dark-theme", str(self.dark_theme),
             "--pad", str(self.pad),
-            "--scale", str(self.scale)
+            "--scale", str(self.scale),
+            "--target", str(self.target)
         ]
 
         opts = opts + [ "--sketch" ] if self.sketch else opts
