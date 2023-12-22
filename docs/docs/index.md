@@ -28,8 +28,3 @@ plugins:
 
 The plugin will automatically add `pymdownx.superfences` and `attr_list` to the
 list of enabled markdown extensions.
-
-## Known issues
-
-* [Layered diagrams](https://d2lang.com/tour/composition/) (animations) are not supported.
-  D2 does not allow outputing such diagrams to stdout.

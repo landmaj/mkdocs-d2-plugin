@@ -50,7 +50,7 @@ class D2ImgTreeprocessor(Treeprocessor):
                     error(e)
                     continue
 
-                result, ok = self.renderer(source, cfg.env())
+                result, ok = self.renderer(source, cfg.opts())
                 if not ok:
                     error(result)
                     continue

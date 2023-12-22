@@ -19,6 +19,7 @@ plugins:
       pad: 100
       scale: -1.0
       force_appendix: False
+      target: "''"
 ```
 
 If an option is not specified, default value (seen above) will be used.
@@ -95,6 +96,34 @@ Bob -> Alice
 
 ```d2 render="False"
 Bob -> Alice
+```
+
+##### Rendering specific target
+
+````md
+```d2 pad="10" scale="1" target="alternative"
+scenarios: {
+    main: {
+        Bob -> Alice
+    }
+
+    alternative: {
+        Alice -> Bob
+    }
+}
+```
+````
+
+```d2 pad="10" scale="1" target="alternative"
+scenarios: {
+    main: {
+        Bob -> Alice
+    }
+
+    alternative: {
+        Alice -> Bob
+    }
+}
 ```
 
 ### Image tags

@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import List
 
 from mkdocs.config import config_options
 from mkdocs.config.base import Config
@@ -17,7 +17,7 @@ class PluginConfig(Config):
     pad = config_options.Type(int, default=100)
     scale = config_options.Type(float, default=-1.0)
     force_appendix = config_options.Type(bool, default=False)
-    target = config_options.Type(str, default="\'\'")
+    target = config_options.Type(str, default="''")
 
     def d2_config(self):
         _dict = {}
@@ -38,17 +38,16 @@ class D2Config(BaseModel, extra="forbid"):
     force_appendix: bool
     target: str
 
-    def env(self) -> list[str]:
+    def opts(self) -> List[str]:
         opts = [
-            "--layout", self.layout,
-            "--theme", str(self.theme),
-            "--dark-theme", str(self.dark_theme),
-            "--pad", str(self.pad),
-            "--scale", str(self.scale),
-            "--target", str(self.target)
+            f"--layout={self.layout}",
+            f"--theme={self.theme}",
+            f"--dark-theme={self.dark_theme}",
+            f"--sketch={str(self.sketch).lower()}",
+            f"--pad={self.pad}",
+            f"--scale={self.scale}",
+            f"--force-appendix={str(self.force_appendix).lower()}",
+            f"--target={self.target}",
         ]
-
-        opts = opts + [ "--sketch" ] if self.sketch else opts
-        opts = opts + [ "--force-appendix" ] if self.force_appendix else opts
 
         return opts

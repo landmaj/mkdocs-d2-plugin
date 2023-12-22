@@ -35,7 +35,7 @@ class D2CustomFence:
             error(e)
             return False
 
-        options["env"] = cfg.env()
+        options["opts"] = cfg.opts()
         return True
 
     def formatter(
@@ -52,7 +52,7 @@ class D2CustomFence:
                 source, language, class_name, options, md, **kwargs
             )
 
-        result, ok = self.renderer(source.encode(), options["env"])
+        result, ok = self.renderer(source.encode(), options["opts"])
         if not ok:
             error(result)
             return fence_code_format(

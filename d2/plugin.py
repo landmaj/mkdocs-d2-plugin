@@ -1,20 +1,22 @@
 import dbm
 import os
-import shutil
 import subprocess
 from functools import partial
 from hashlib import sha1
 from pathlib import Path
-from typing import Dict, MutableMapping, Tuple
+from typing import List, MutableMapping, Tuple
 
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.exceptions import ConfigurationError
 from mkdocs.plugins import BasePlugin
 from mkdocs.utils.yaml import RelativeDirPlaceholder
+from packaging import version
 
 from d2 import info
 from d2.config import PluginConfig
 from d2.fence import D2CustomFence
+
+REQUIRED_VERSION = version.parse("0.6.3")
 
 
 class Plugin(BasePlugin[PluginConfig]):
@@ -28,8 +30,18 @@ class Plugin(BasePlugin[PluginConfig]):
             info(f"Using cache at {path} ({backend})")
             cache = dbm.open(path, "c")
 
-        if shutil.which(self.config.executable) is None:
+        try:
+            result = subprocess.run(
+                [self.config.executable, "--version"],
+                capture_output=True,
+            )
+        except FileNotFoundError:
             raise ConfigurationError(f"executable '{self.config.executable}' not found")
+        d2_version = version.parse(result.stdout.decode().strip())
+        if d2_version < REQUIRED_VERSION:
+            raise ConfigurationError(
+                f"required d2 version {REQUIRED_VERSION} not satisfied, found {d2_version}"
+            )
 
         renderer = partial(render, self.config.executable, cache)  # type: ignore
 
@@ -65,30 +77,31 @@ def render(
     executable: str,
     cache: MutableMapping[bytes, bytes] | None,
     source: bytes,
-    env: list[str],
+    opts: List[str],
 ) -> Tuple[str, bool]:
     key = ""
     if cache is not None:
-        brute_key = f"{source.hex()}.{env}"
-        key = sha1(brute_key.encode()).digest()
+        key = source.hex()
+        for opt in opts:
+            key = f"{key}.{opt}"
+        key = sha1(key.encode()).digest()
         if key in cache:
             return cache[key].decode(), True
-    
-    process = [ executable ] + env + [ "-", "-" ]
 
     try:
         result = subprocess.run(
-            process,
+            [executable, *opts, "-", "-"],
             input=source,
             capture_output=True,
         )
     except Exception as e:
         return str(e), False
 
-    stdout = result.stdout.decode().strip()
     if result.returncode != 0:
-        return stdout, False
+        stderr = result.stderr.decode().strip()
+        return stderr, False
 
+    stdout = result.stdout.decode().strip()
     if key != "" and cache is not None:
         cache[key] = stdout.encode()
     return stdout, True

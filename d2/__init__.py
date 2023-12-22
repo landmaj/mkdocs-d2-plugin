@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Callable, Dict, Tuple
+from typing import Callable, List, Tuple
 
 from mkdocs.plugins import log
 
@@ -9,4 +9,4 @@ info = partial(log.info, f"{NAME}: %s")
 warning = partial(log.warning, f"{NAME}: %s")
 error = partial(log.error, f"{NAME}: %s")
 
-Renderer = Callable[[bytes, Dict[str, str]], Tuple[str, bool]]
+Renderer = Callable[[bytes, List[str]], Tuple[str, bool]]
