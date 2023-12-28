@@ -29,6 +29,7 @@ class Plugin(BasePlugin[PluginConfig]):
             backend = dbm.whichdb(path)
             info(f"Using cache at {path} ({backend})")
             cache = dbm.open(path, "c")
+            self.config["cache"] = cache
 
         try:
             result = subprocess.run(
@@ -71,6 +72,12 @@ class Plugin(BasePlugin[PluginConfig]):
         }
 
         return config
+
+    def on_post_build(self, _) -> None:
+        cache = self.config.cache
+        if cache is not None:
+            info("Closing cache")
+            cache.close()
 
 
 def render(
