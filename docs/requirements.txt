@@ -1,2 +1,2 @@
 mkdocs-material
-mkdocs-d2-plugin==1.2.0
+mkdocs-d2-plugin==1.2.2

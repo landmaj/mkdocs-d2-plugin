@@ -21,7 +21,7 @@ REQUIRED_VERSION = version.parse("0.6.3")
 
 class Plugin(BasePlugin[PluginConfig]):
     def on_config(self, config: MkDocsConfig) -> MkDocsConfig | None:
-        cache = None
+        self.cache = None
         if self.config.cache:
             if not os.path.isdir(self.config.cache_dir):
                 os.makedirs(self.config.cache_dir)
@@ -29,6 +29,7 @@ class Plugin(BasePlugin[PluginConfig]):
             backend = dbm.whichdb(path)
             info(f"Using cache at {path} ({backend})")
             cache = dbm.open(path, "c")
+            self.cache = cache
             self.config["cache"] = cache
 
         try:
@@ -44,7 +45,7 @@ class Plugin(BasePlugin[PluginConfig]):
                 f"required d2 version {REQUIRED_VERSION} not satisfied, found {d2_version}"
             )
 
-        renderer = partial(render, self.config.executable, cache)  # type: ignore
+        renderer = partial(render, self.config.executable, self.cache)  # type: ignore
 
         markdown_extensions = config.setdefault("markdown_extensions", [])
         for ext in {"pymdownx.superfences", "attr_list", "d2_img"}:
@@ -73,11 +74,9 @@ class Plugin(BasePlugin[PluginConfig]):
 
         return config
 
-    def on_post_build(self, _) -> None:
-        cache = self.config.cache
-        if cache is not None:
-            info("Closing cache")
-            cache.close()
+    def on_post_build(self, config: MkDocsConfig) -> None:
+        if self.cache:
+            self.cache.close()
 
 
 def render(
