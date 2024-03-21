@@ -39,7 +39,9 @@ class Plugin(BasePlugin[PluginConfig]):
             )
         except FileNotFoundError:
             raise ConfigurationError(f"executable '{self.config.executable}' not found")
-        d2_version = version.parse(result.stdout.decode().strip())
+        raw_version = result.stdout.decode().strip()
+        raw_version = raw_version.split("-")[0]  # remove git commit info
+        d2_version = version.parse(raw_version)
         if d2_version < REQUIRED_VERSION:
             raise ConfigurationError(
                 f"required d2 version {REQUIRED_VERSION} not satisfied, found {d2_version}"
