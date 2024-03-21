@@ -13,6 +13,7 @@ plugins:
       cache: True
       cache_dir: .config/plugin/d2
       layout: dagre
+      elk-algorithm: layered # ignored if layout is not set to elk
       theme: 0
       dark_theme: -1
       sketch: False
@@ -144,10 +145,10 @@ se no error but the diagram will be rendered with global configuration only.
 ##### Theme and layout
 
 ```md
-![Cloud](cloud.d2){theme=101 layout=elk}
+![Cloud](cloud.d2){theme="101" layout="elk" elk_algorithm="mrtree"}
 ```
 
-![Cloud](cloud.d2){theme=101 layout=elk}
+![Cloud](cloud.d2){theme="101" layout="elk" elk_algorithm="mrtree"}
 
 ##### Dark theme
 

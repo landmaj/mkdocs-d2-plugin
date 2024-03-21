@@ -11,6 +11,7 @@ class PluginConfig(Config):
     cache_dir = config_options.Type(str, default=".cache/plugin/d2")
 
     layout = config_options.Type(str, default="dagre")
+    elk_algorithm = config_options.Type(str, default="layered")
     theme = config_options.Type(int, default=0)
     dark_theme = config_options.Type(int, default=-1)
     sketch = config_options.Type(bool, default=False)
@@ -30,6 +31,7 @@ class PluginConfig(Config):
 
 class D2Config(BaseModel, extra="forbid"):
     layout: str
+    elk_algorithm: str
     theme: int
     dark_theme: int
     sketch: bool
@@ -42,6 +44,7 @@ class D2Config(BaseModel, extra="forbid"):
         opts = [
             f"--layout={self.layout}",
             f"--theme={self.theme}",
+            f"--elk-algorithm={self.elk_algorith}",
             f"--dark-theme={self.dark_theme}",
             f"--sketch={str(self.sketch).lower()}",
             f"--pad={self.pad}",
