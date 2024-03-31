@@ -28,7 +28,7 @@ class PluginConfig(Config):
         return _dict
 
 
-class D2Config(BaseModel, extra="forbid"):
+class D2Config(BaseModel, extra="allow"):
     layout: str
     theme: int
     dark_theme: int
@@ -49,5 +49,9 @@ class D2Config(BaseModel, extra="forbid"):
             f"--force-appendix={str(self.force_appendix).lower()}",
             f"--target={self.target}",
         ]
+
+        if extra := self.model_extra:
+            for k, v in extra.items():
+                opts += [f"--{k.replace('_', '-')}={v}"]
 
         return opts

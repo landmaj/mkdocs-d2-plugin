@@ -44,7 +44,28 @@ You can override locally everything except:
 * `cache`
 * `cache_dir`
 
-### Fenced code blocks
+You can use local configuration to set options which are
+not explicitly provided by the plugin, for example
+[layout engine specific options](https://d2lang.com/tour/layouts/#layout-engines).
+
+These options are not validated and passed directly to the d2 after some basic
+preprocessing. Expect d2 errors if you provide invalid options.
+
+As an example, to pass this option:
+
+```bash
+--elk-nodeSelfLoop int      spacing to be preserved between a node and its self loops
+```
+
+Specify it like this (notice `_` instead of `-`):
+
+````md
+```d2 elk_nodeSelfLoop="10"
+self -> other
+```
+````
+
+## Fenced code blocks
 
 Configuration options are specified as key="value" pairs after the
 language tag.
@@ -64,9 +85,9 @@ There is one special option, `render="False"`, available only in fenced code blo
 This option disables rendering of the diagram and allows you to display
 the diagram definition instead.
 
-#### Examples
+### Examples
 
-##### Padding and scale
+#### Padding and scale
 
 ````md
 ```d2 pad="20" scale="0.7"
@@ -86,7 +107,7 @@ John.ack -> Alice: Hi Alice, I can hear you!
 John -> Alice: I feel great!
 ```
 
-##### Disabled rendering
+#### Disabled rendering
 
 ````md
 ```d2 render="False"
@@ -98,7 +119,7 @@ Bob -> Alice
 Bob -> Alice
 ```
 
-##### Rendering specific target
+#### Rendering specific target
 
 ````md
 ```d2 pad="10" scale="1" target="alternative"
@@ -126,7 +147,7 @@ scenarios: {
 }
 ```
 
-### Image tags
+## Image tags
 
 Image tags use [attr_list](https://python-markdown.github.io/extensions/attr_list/)
 extension to specify configuration options.
@@ -139,9 +160,9 @@ Contrary to fenced code blocks, quotes around values are optional. However
 **white space before opening brace is not allowed**. Add space and you will
 se no error but the diagram will be rendered with global configuration only.
 
-#### Examples
+### Examples
 
-##### Theme and layout
+#### Theme and layout
 
 ```md
 ![Cloud](cloud.d2){theme=101 layout=elk}
@@ -149,7 +170,7 @@ se no error but the diagram will be rendered with global configuration only.
 
 ![Cloud](cloud.d2){theme=101 layout=elk}
 
-##### Dark theme
+#### Dark theme
 
 ```md
 ![Cloud](cloud.d2){dark_theme="201"}
