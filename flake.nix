@@ -41,6 +41,13 @@
             if test ! -d $VENV; then
               virtualenv $VENV
             fi
+
+            # Check if Python version in virtualenv is correct
+            NIX_PYTHON=$(python3 --version)
+            VENV_PYTHON=$(.venv/bin/python3 --version)
+            if [ "$NIX_PYTHON" != "$VENV_PYTHON" ]; then
+              echo -e "\033[0;31m!!! INCORRECT PYTHON VERSION IN VIRTUALENV !!!\033[0m"
+            fi
           '';
         };
       });
