@@ -7,7 +7,7 @@ from markdown import Extension, Markdown
 from markdown.treeprocessors import Treeprocessor
 from pydantic import ValidationError
 
-from d2 import Renderer, error, warning
+from d2 import Renderer, debug, error, warning
 from d2.config import D2Config
 
 
@@ -30,8 +30,10 @@ class D2ImgTreeprocessor(Treeprocessor):
             if src.suffix == ".d2":
                 diagram = Path(self.base_dir, src).resolve()
                 if not diagram.exists():
-                    error(f"File not found: {diagram}")
+                    debug(f"File not found: {src} in {self.base_dir}")
                     continue
+                else:
+                    debug(f"File found: {src} in {self.base_dir}")
                 with diagram.open("rb") as f:
                     source = f.read()
 
