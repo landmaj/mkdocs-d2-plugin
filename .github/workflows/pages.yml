@@ -26,6 +26,7 @@ jobs:
       - name: Build docs
         working-directory: ./docs
         run: |
+          pip install ../
           pip install -r requirements.txt
           mkdocs build
 
@@ -46,6 +47,7 @@ jobs:
       - name: Build docs
         working-directory: ./docs
         run: |
+          pip install ../
           pip install -r requirements.txt
           mkdocs build
       - uses: actions/upload-pages-artifact@v1
