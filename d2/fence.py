@@ -43,7 +43,7 @@ class D2CustomFence:
         source: str,
         language: str,
         class_name: str,
-        options: dict[str, Any],
+        options: Dict[str, Any],
         md: Markdown,
         **kwargs: Any,
     ) -> str:
