@@ -1,14 +1,19 @@
 import dbm
 import os
+import re
+from shutil import rmtree
 import subprocess
 from functools import partial
 from hashlib import sha1
 from pathlib import Path
+from tempfile import mkdtemp
 from typing import List, MutableMapping, Optional, Tuple
+from uuid import uuid4
 
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.exceptions import ConfigurationError
-from mkdocs.plugins import BasePlugin
+from mkdocs.plugins import BasePlugin, event_priority
+from mkdocs.structure.files import Files, InclusionLevel
 from mkdocs.utils.yaml import RelativeDirPlaceholder
 from packaging import version
 
@@ -18,8 +23,45 @@ from d2.fence import D2CustomFence
 
 REQUIRED_VERSION = version.parse("0.6.3")
 
+IMG_REGEX = r'(?P<alt>!\[[^\]]*\])\((?P<filename>.*?\.d2)(?="|\))\)'
+
 
 class Plugin(BasePlugin[PluginConfig]):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.temp_dir = mkdtemp()
+    
+    def on_shutdown(self):
+        rmtree(self.temp_dir)
+
+    # run before blog plugin which is -50
+    @event_priority(0)
+    def on_files(self, files: Files, *, config):
+        # remove diagram sources from generated site
+        for file in files.media_files():
+            if file.name.endswith(".d2"):
+                file.inclusion = InclusionLevel.EXCLUDED
+
+        # replace relative diagram paths with absolute paths
+        # as relative links are broken by blog plugin
+        for file in files.documentation_pages():
+            content = file.content_string
+
+            for match in re.finditer(IMG_REGEX, file.content_string):
+                alt = match.group("alt")
+                src = match.group("filename")
+
+                diagram = Path(file.abs_src_path).parent / src
+
+                before_tag = content[: match.start()]
+                after_tag = content[match.end() :]
+
+                content = f"{before_tag}{alt}({diagram.resolve()}){after_tag}"
+
+            with open(Path(self.temp_dir, uuid4().hex), "w") as f:
+                f.write(content)
+                file.abs_src_path = f.name
+
     def on_config(self, config: MkDocsConfig) -> Optional[MkDocsConfig]:
         self.cache = None
         if self.config.cache:
