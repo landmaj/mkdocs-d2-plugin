@@ -30,7 +30,7 @@ class D2ImgTreeprocessor(Treeprocessor):
             if src.suffix == ".d2":
                 diagram = Path(self.base_dir, src).resolve()
                 if not diagram.exists():
-                    error(f"File not found: {diagram}")
+                    warning(f"File not found: {diagram}")
                     continue
                 with diagram.open("rb") as f:
                     source = f.read()
