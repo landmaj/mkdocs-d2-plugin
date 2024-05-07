@@ -20,9 +20,9 @@ class D2CustomFence:
     def validator(
         self,
         language: str,
-        inputs: dict[str, str],
-        options: dict[str, Any],
-        attrs: dict[str, Any],
+        inputs: Dict[str, str],
+        options: Dict[str, Any],
+        attrs: Dict[str, Any],
         md: Markdown,
     ) -> bool:
         options["render"] = falsy(inputs.pop("render", "True"))

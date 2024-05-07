@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
   };
 
   outputs =
@@ -20,14 +20,11 @@
         default = pkgs.mkShell {
           packages = with pkgs;
             let
-              # CHANGE PYTHON VERSION
-              devpython = python3.withPackages
+              # PYTHON VERSION
+              devpython = python39.withPackages
                 (packages: with packages; [
                   # PYTHON PACKAGES
                   virtualenv
-                  pip
-                  setuptools
-                  wheel
                 ]);
             in
             [
@@ -36,17 +33,21 @@
             ];
 
           shellHook = ''
-            # Setup the virtual environment if it doesn't already exist.
+            # check if Python version in virtualenv is correct
+            if test -d $VENV; then
+              NIX_PYTHON=$(python3 --version)
+              VENV_PYTHON=$(.venv/bin/python3 --version)
+              if [ "$NIX_PYTHON" != "$VENV_PYTHON" ]; then
+                echo -e "\033[0;31m!!! INCORRECT PYTHON VERSION IN VIRTUALENV !!!\033[0m"
+                rm -rf $VENV
+              fi
+            fi
+
+            # setup the virtual environment if it doesn't exist
             VENV=.venv
             if test ! -d $VENV; then
               virtualenv $VENV
-            fi
-
-            # Check if Python version in virtualenv is correct
-            NIX_PYTHON=$(python3 --version)
-            VENV_PYTHON=$(.venv/bin/python3 --version)
-            if [ "$NIX_PYTHON" != "$VENV_PYTHON" ]; then
-              echo -e "\033[0;31m!!! INCORRECT PYTHON VERSION IN VIRTUALENV !!!\033[0m"
+              $VENV/bin/pip install --upgrade pip build twine
             fi
           '';
         };

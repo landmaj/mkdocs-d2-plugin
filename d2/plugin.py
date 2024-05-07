@@ -4,7 +4,7 @@ import subprocess
 from functools import partial
 from hashlib import sha1
 from pathlib import Path
-from typing import List, MutableMapping, Tuple
+from typing import List, MutableMapping, Optional, Tuple
 
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.exceptions import ConfigurationError
@@ -20,7 +20,7 @@ REQUIRED_VERSION = version.parse("0.6.3")
 
 
 class Plugin(BasePlugin[PluginConfig]):
-    def on_config(self, config: MkDocsConfig) -> MkDocsConfig | None:
+    def on_config(self, config: MkDocsConfig) -> Optional[MkDocsConfig]:
         self.cache = None
         if self.config.cache:
             if not os.path.isdir(self.config.cache_dir):
@@ -83,7 +83,7 @@ class Plugin(BasePlugin[PluginConfig]):
 
 def render(
     executable: str,
-    cache: MutableMapping[bytes, bytes] | None,
+    cache: Optional[MutableMapping[bytes, bytes]],
     source: bytes,
     opts: List[str],
 ) -> Tuple[str, bool]:

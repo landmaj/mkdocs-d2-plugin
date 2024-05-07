@@ -1,7 +1,7 @@
 import xml.etree.ElementTree as etree
 from io import StringIO
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from markdown import Extension, Markdown
 from markdown.treeprocessors import Treeprocessor
@@ -24,7 +24,7 @@ class D2ImgTreeprocessor(Treeprocessor):
         self.renderer = renderer
         super().__init__(md)
 
-    def run(self, root: etree.Element) -> etree.Element | None:
+    def run(self, root: etree.Element) -> Optional[etree.Element]:
         for elem in root.iter("img"):
             src = Path(elem.get("src", ""))
             if src.suffix == ".d2":
