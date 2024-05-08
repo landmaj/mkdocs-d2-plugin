@@ -9,6 +9,9 @@ class PluginConfig(Config):
     executable = config_options.Type(str, default="d2")
     cache = config_options.Type(bool, default=True)
     cache_dir = config_options.Type(str, default=".cache/plugin/d2")
+    rewrite_paths = config_options.Type(bool, default=True)
+    remove_sources = config_options.Type(bool, default=True)
+    raise_on_error = config_options.Type(bool, default=False)
 
     layout = config_options.Type(str, default="dagre")
     theme = config_options.Type(int, default=0)
@@ -22,7 +25,14 @@ class PluginConfig(Config):
     def d2_config(self):
         _dict = {}
         for k, v in self.items():
-            if k in {"executable", "cache", "cache_dir"}:
+            if k in {
+                "executable",
+                "cache",
+                "cache_dir",
+                "rewrite_paths",
+                "remove_sources",
+                "raise_on_error",
+            }:
                 continue
             _dict[k] = v
         return _dict

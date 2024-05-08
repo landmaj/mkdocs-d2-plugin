@@ -12,6 +12,10 @@ plugins:
       executable: d2 # path to d2 executable
       cache: True
       cache_dir: .config/plugin/d2
+      remove_sources: True
+      rewrite_paths: True
+      raise_on_error: False
+
       layout: dagre
       theme: 0
       dark_theme: -1
@@ -35,6 +39,23 @@ to add `.cache` to `.gitignore` file.
 
 If you want to pregenerate cache and use it on a different machine, make
 sure both systems use the same [backend](https://docs.python.org/3/library/dbm.html).
+
+### Remove sources
+
+Exclude D2 sources files from the build output directory. This option is
+useful if you don't want to expose the diagram source code.
+
+### Rewrite paths
+
+Rewrite all D2 paths in Markdown from relative to absolute early in the build
+process. This is needed if you want to use Material for MkDocs blog plugin as
+it copies Markdown files to a different directory, breaking relative links.
+
+### Raise on error
+
+Raise an exception if D2 fails to render a diagram. By default, the plugin
+will log an error and continue with the build process. Set to `True` if you
+want errors to fail CI builds.
 
 ## Local config
 

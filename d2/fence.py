@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 from markdown import Markdown
+from mkdocs.exceptions import PluginError
 from pydantic import ValidationError
 from pymdownx.superfences import fence_code_format
 
@@ -13,9 +14,11 @@ class D2CustomFence:
         self,
         config: Dict[str, Any],
         renderer: Renderer,
+        raise_on_error: bool,
     ) -> None:
         self.config = config
         self.renderer = renderer
+        self.raise_on_error = raise_on_error
 
     def validator(
         self,
@@ -32,8 +35,11 @@ class D2CustomFence:
         try:
             cfg = D2Config(**cfg)
         except ValidationError as e:
-            error(e)
-            return False
+            if self.raise_on_error:
+                raise PluginError(e)
+            else:
+                error(e)
+                return False
 
         options["opts"] = cfg.opts()
         return True
@@ -54,10 +60,13 @@ class D2CustomFence:
 
         result, ok = self.renderer(source.encode(), options["opts"])
         if not ok:
-            error(result)
-            return fence_code_format(
-                source, language, class_name, options, md, **kwargs
-            )
+            if self.raise_on_error:
+                raise PluginError(result)
+            else:
+                error(result)
+                return fence_code_format(
+                    source, language, class_name, options, md, **kwargs
+                )
 
         return f"<div><style>svg>a:hover {{ text-decoration: underline }}</style>{result}</div>"
 

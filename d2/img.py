@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 
 from markdown import Extension, Markdown
 from markdown.treeprocessors import Treeprocessor
+from mkdocs.exceptions import PluginError
 from pydantic import ValidationError
 
 from d2 import Renderer, error, warning
@@ -18,10 +19,12 @@ class D2ImgTreeprocessor(Treeprocessor):
         base_dir: str,
         config: Dict[str, Any],
         renderer: Renderer,
+        raise_on_error: bool,
     ):
         self.base_dir = base_dir
         self.config = config
         self.renderer = renderer
+        self.raise_on_error = raise_on_error
         super().__init__(md)
 
     def run(self, root: etree.Element) -> Optional[etree.Element]:
@@ -30,8 +33,11 @@ class D2ImgTreeprocessor(Treeprocessor):
             if src.suffix == ".d2":
                 diagram = Path(self.base_dir, src).resolve()
                 if not diagram.exists():
-                    warning(f"File not found: {diagram}")
-                    continue
+                    if self.raise_on_error:
+                        raise PluginError(f"File not found: {diagram}")
+                    else :
+                        warning(f"File not found: {diagram}")
+                        continue
                 with diagram.open("rb") as f:
                     source = f.read()
 
@@ -47,13 +53,19 @@ class D2ImgTreeprocessor(Treeprocessor):
                 try:
                     cfg = D2Config(**cfg)
                 except ValidationError as e:
-                    error(e)
-                    continue
+                    if self.raise_on_error:
+                        raise PluginError(e)
+                    else:
+                        error(e)
+                        continue
 
                 result, ok = self.renderer(source, cfg.opts())
                 if not ok:
-                    error(result)
-                    continue
+                    if self.raise_on_error:
+                        raise PluginError(result)
+                    else:
+                        error(result)
+                        continue
 
                 svg = etree.iterparse(StringIO(result))
                 for _, el in svg:
@@ -70,6 +82,7 @@ class D2ImgExtension(Extension):
             "base_dir": ["", "base directory for diagrams"],
             "config": [dict(), "global configuration"],
             "renderer": [Renderer, "render function"],
+            "raise_on_error": [False, "raise on error"],
         }
         super().__init__(**kwargs)
 
@@ -77,7 +90,13 @@ class D2ImgExtension(Extension):
         md.registerExtension(self)
         cfg = self.getConfigs()
         md.treeprocessors.register(
-            D2ImgTreeprocessor(md, cfg["base_dir"], cfg["config"], cfg["renderer"]),
+            D2ImgTreeprocessor(
+                md,
+                cfg["base_dir"],
+                cfg["config"],
+                cfg["renderer"],
+                cfg["raise_on_error"],
+            ),
             "d2_img",
             7,
         )

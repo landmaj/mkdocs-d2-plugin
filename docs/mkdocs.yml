@@ -7,6 +7,10 @@ plugins:
   - d2:
       theme: 3
       sketch: True
+      raise_on_error: True
+  - blog:
+      archive: true
+      categories: false
 
 markdown_extensions:
   - admonition
@@ -20,3 +24,5 @@ nav:
   - Home: "index.md"
   - Usage: "guide/usage.md"
   - Configuration: "guide/configuration.md"
+  - Blog: 
+    - blog/index.md
