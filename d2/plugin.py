@@ -12,7 +12,7 @@ from mkdocs.plugins import BasePlugin
 from mkdocs.utils.yaml import RelativeDirPlaceholder
 from packaging import version
 
-from d2 import info
+from d2 import info, warning
 from d2.config import PluginConfig
 from d2.fence import D2CustomFence
 
@@ -41,11 +41,14 @@ class Plugin(BasePlugin[PluginConfig]):
             raise ConfigurationError(f"executable '{self.config.executable}' not found")
         raw_version = result.stdout.decode().strip()
         raw_version = raw_version.split("-")[0]  # remove git commit info
-        d2_version = version.parse(raw_version)
-        if d2_version < REQUIRED_VERSION:
-            raise ConfigurationError(
-                f"required d2 version {REQUIRED_VERSION} not satisfied, found {d2_version}"
-            )
+        try:
+            d2_version = version.parse(raw_version)
+            if d2_version < REQUIRED_VERSION:
+                warning(
+                    f"required d2 version {REQUIRED_VERSION} not satisfied; found {d2_version}"
+                )
+        except version.InvalidVersion:
+            warning(f"version format not recognized; found {raw_version}")
 
         renderer = partial(render, self.config.executable, self.cache)  # type: ignore
 
