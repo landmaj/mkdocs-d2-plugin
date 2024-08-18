@@ -32,12 +32,6 @@ class D2ImgTreeprocessor(Treeprocessor):
                 if not diagram.exists():
                     warning(f"File not found: {diagram}")
                     continue
-                with diagram.open("rb") as f:
-                    source = f.read()
-
-                if source.strip() == b"":
-                    warning(f"{src}: empty diagram file")
-                    continue
 
                 cfg = self.config.copy()
                 cfg.update(elem.attrib)
@@ -50,7 +44,7 @@ class D2ImgTreeprocessor(Treeprocessor):
                     error(e)
                     continue
 
-                result, ok = self.renderer(source, cfg.opts())
+                result, ok = self.renderer(diagram, cfg.opts())
                 if not ok:
                     error(result)
                     continue

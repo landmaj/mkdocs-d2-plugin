@@ -4,7 +4,7 @@ import subprocess
 from functools import partial
 from hashlib import sha1
 from pathlib import Path
-from typing import List, MutableMapping, Optional, Tuple
+from typing import List, MutableMapping, Optional, Tuple, Union
 
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.exceptions import ConfigurationError
@@ -87,21 +87,32 @@ class Plugin(BasePlugin[PluginConfig]):
 def render(
     executable: str,
     cache: Optional[MutableMapping[bytes, bytes]],
-    source: bytes,
+    source: Union[bytes, Path],
     opts: List[str],
 ) -> Tuple[str, bool]:
+    is_file = isinstance(source, Path)
+
     key = ""
     if cache is not None:
-        key = source.hex()
+        if is_file:
+            key = f"{source}_{source.stat().st_mtime}"
+        else:
+            key = source.hex()
         for opt in opts:
             key = f"{key}.{opt}"
         key = sha1(key.encode()).digest()
         if key in cache:
             return cache[key].decode(), True
 
+    if is_file:
+        args = [executable, *opts, source.as_posix(), "-"]
+        source = source.read_bytes()
+    else:
+        args = [executable, *opts, "-", "-"]
+
     try:
         result = subprocess.run(
-            [executable, *opts, "-", "-"],
+            args,
             input=source,
             capture_output=True,
         )

@@ -43,3 +43,33 @@ To link to `flow.d2` from `usage.md` you would use:
 ```md
 ![Diagram](../flow.d2)
 ```
+
+### Imports
+
+Diagrams included using image tags support [imports](https://d2lang.com/tour/imports).
+
+````md
+importer.d2
+```d2
+a: @imported
+a -> b
+```
+
+imported.d2
+```d2
+x: {
+    shape: circle
+}
+```
+
+In MkDocs:
+![Diagram](../importer.d2)
+````
+
+![Diagram with import](importer.d2){pad="20" scale="1"}
+
+!!! warning
+    This feature is somehwat broken due to caching of rendered diagrams.
+    Diagrams are not re-rendered when an imported file changes. You can either update
+    the main diagram (re-render is triggered by modification time, no changes
+    are needed) or [disable the cache](configuration.md#cache) altogether.
