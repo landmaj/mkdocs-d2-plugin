@@ -53,9 +53,32 @@ class D2ImgTreeprocessor(Treeprocessor):
                 for _, el in svg:
                     # strip namespace
                     _, _, el.tag = el.tag.rpartition("}")
-                elem.tag = "div"
+
                 elem.clear()
-                elem.append(svg.root)
+                elem.tag = "div"
+                elem.set("class", "d2")
+
+                if not cfg.has_dark_theme():
+                    elem.append(svg.root)
+                    return
+
+                dark_result, ok = self.renderer(diagram, cfg.opts(dark=True))
+                if not ok:
+                    error(dark_result)
+                    continue
+
+                dark_svg = etree.iterparse(StringIO(dark_result))
+                for _, el in dark_svg:
+                    # strip namespace
+                    _, _, el.tag = el.tag.rpartition("}")
+
+                light = etree.Element("div", {"class": "d2-light"})
+                light.append(svg.root)
+                elem.append(light)
+
+                dark = etree.Element("div", {"class": "d2-dark"})
+                dark.append(dark_svg.root)
+                elem.append(dark)
 
 
 class D2ImgExtension(Extension):

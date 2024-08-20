@@ -65,6 +65,30 @@ self -> other
 ```
 ````
 
+## Light and dark mode
+
+By default, diagrams are rendered using a single mode (theme). To enable light/dark mode
+switching, you need to specify `dark_theme` option in global or local configuration.
+You can also disable it per diagram by setting `dark_theme` to `-1`.
+
+!!! warning "Requirements when using custom color schemes"
+
+    If you're using [custom color schemes](https://squidfunk.github.io/mkdocs-material/setup/changing-the-colors/#custom-color-schemes),
+    you'll also have to add the following selectors to your scheme:
+
+    ``` css
+    [data-md-color-scheme="custom-light"] div.d2-dark {
+        display: none; /* Hide light images in light mode */
+    }
+
+    [data-md-color-scheme="custom-dark"] div.d2-light {
+        display: none; /* Hide light images in dark mode */
+    }
+    ```
+
+    Remember to change `#!css "custom-light"` and `#!css "custom-dark"` to the
+    name of your scheme.
+
 ## Fenced code blocks
 
 Configuration options are specified as key="value" pairs after the
@@ -164,6 +188,9 @@ se no error but the diagram will be rendered with global configuration only.
 
 #### Theme and layout
 
+!!! info
+    Change mode to light (:material-brightness-7: button at the top).
+
 ```md
 ![Cloud](cloud.d2){theme=101 layout=elk}
 ```
@@ -177,6 +204,6 @@ se no error but the diagram will be rendered with global configuration only.
 ```
 
 !!! info
-    Change system theme to light/dark to see the effect.
+    Change mode to dark (:material-brightness-4: button at the top).
 
 ![Cloud](cloud.d2){dark_theme="201"}

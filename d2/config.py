@@ -38,11 +38,10 @@ class D2Config(BaseModel, extra="allow"):
     force_appendix: bool
     target: str
 
-    def opts(self) -> List[str]:
+    def opts(self, dark=False) -> List[str]:
         opts = [
             f"--layout={self.layout}",
-            f"--theme={self.theme}",
-            f"--dark-theme={self.dark_theme}",
+            f"--theme={self.theme if not dark else self.dark_theme}",
             f"--sketch={str(self.sketch).lower()}",
             f"--pad={self.pad}",
             f"--scale={self.scale}",
@@ -55,3 +54,6 @@ class D2Config(BaseModel, extra="allow"):
                 opts += [f"--{k.replace('_', '-')}={v}"]
 
         return opts
+
+    def has_dark_theme(self) -> bool:
+        return self.dark_theme >= 0

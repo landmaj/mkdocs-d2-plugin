@@ -1,14 +1,17 @@
 import dbm
 import os
+import re
 import subprocess
 from functools import partial
 from hashlib import sha1
 from pathlib import Path
 from typing import List, MutableMapping, Optional, Tuple, Union
+from uuid import uuid4
 
 from mkdocs.config.defaults import MkDocsConfig
 from mkdocs.exceptions import ConfigurationError
 from mkdocs.plugins import BasePlugin
+from mkdocs.structure.files import File, Files
 from mkdocs.utils.yaml import RelativeDirPlaceholder
 from packaging import version
 
@@ -77,11 +80,30 @@ class Plugin(BasePlugin[PluginConfig]):
             "renderer": renderer,
         }
 
+        config["extra_css"].append("assets/stylesheets/mkdocs_d2_plugin.css")
+
         return config
 
     def on_post_build(self, config: MkDocsConfig) -> None:
         if self.cache:
             self.cache.close()
+
+    def on_files(self, files: Files, config):
+        src_path = (
+            Path(os.path.dirname(os.path.abspath(__file__)))
+            / "css"
+            / "mkdocs_d2_plugin.css"
+        )
+
+        files.append(
+            File(
+                src_path,
+                "",
+                config["site_dir"],
+                config["use_directory_urls"],
+                dest_uri="assets/stylesheets/mkdocs_d2_plugin.css",
+            )
+        )
 
 
 def render(
@@ -91,6 +113,8 @@ def render(
     opts: List[str],
 ) -> Tuple[str, bool]:
     is_file = isinstance(source, Path)
+
+    print(f"Rendering {source} with {opts}")
 
     key = ""
     if cache is not None:
@@ -124,6 +148,15 @@ def render(
         return stderr, False
 
     stdout = result.stdout.decode().strip()
+
+    # D2 uses a hash of diagram structure as a class name used for styling.
+    # This means rendering options do not affect the class name, resulting 
+    # in conflicts if the same diagram is embeded multiple times using 
+    # different themes.
+    new_class = f"d2-{uuid4().hex}"
+    stdout = re.sub(r"d2-\d+", new_class, stdout)
+
     if key != "" and cache is not None:
         cache[key] = stdout.encode()
+
     return stdout, True

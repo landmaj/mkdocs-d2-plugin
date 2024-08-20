@@ -36,6 +36,9 @@ class D2CustomFence:
             return False
 
         options["opts"] = cfg.opts()
+        if cfg.has_dark_theme():
+            options["opts_dark"] = cfg.opts(dark=True)
+
         return True
 
     def formatter(
@@ -59,7 +62,22 @@ class D2CustomFence:
                 source, language, class_name, options, md, **kwargs
             )
 
-        return f"<div><style>svg>a:hover {{ text-decoration: underline }}</style>{result}</div>"
+        if "opts_dark" not in options:
+            return f'<div class="d2">{result}</div>'
+
+        dark_result, ok = self.renderer(source.encode(), options["opts_dark"])
+        if not ok:
+            error(dark_result)
+            return fence_code_format(
+                source, language, class_name, options, md, **kwargs
+            )
+
+        return (
+            '<div class="d2">'
+            f'<div class="d2-light">{result}</div>'
+            f'<div class="d2-dark">{dark_result}</div>'
+            "</div>"
+        )
 
 
 def falsy(value: str) -> bool:
