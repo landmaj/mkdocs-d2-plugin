@@ -17,7 +17,7 @@ setup(
     author="Michał Wieluński",
     author_email="michal@wielunski.net",
     license="MIT",
-    python_requires=">=3.8",
+    python_requires=">=3.9",
     install_requires=[
         "mkdocs>=1.5.0",
         "pymdown-extensions>=9.0",
@@ -38,6 +38,8 @@ setup(
         "Programming Language :: Python :: 3.11",
     ],
     packages=find_packages(),
+    package_data={"d2.css": ["mkdocs_d2_plugin.css"]},
+    include_package_data=True,
     entry_points={
         "mkdocs.plugins": ["d2 = d2.plugin:Plugin"],
         "markdown.extensions": ["d2_img = d2.img:D2ImgExtension"],
