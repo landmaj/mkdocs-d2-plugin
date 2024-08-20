@@ -4,6 +4,7 @@ import re
 import subprocess
 from functools import partial
 from hashlib import sha1
+from importlib.resources import files as importlib_files
 from pathlib import Path
 from typing import List, MutableMapping, Optional, Tuple, Union
 from uuid import uuid4
@@ -89,21 +90,17 @@ class Plugin(BasePlugin[PluginConfig]):
             self.cache.close()
 
     def on_files(self, files: Files, config):
-        src_path = (
-            Path(os.path.dirname(os.path.abspath(__file__)))
-            / "css"
-            / "mkdocs_d2_plugin.css"
+        content = importlib_files("d2.css").joinpath("mkdocs_d2_plugin.css").read_text()
+        file = File(
+            "mkdocs_d2_plugin.css",
+            "",
+            config["site_dir"],
+            config["use_directory_urls"],
+            dest_uri="assets/stylesheets/mkdocs_d2_plugin.css",
         )
+        file.content_string = content
 
-        files.append(
-            File(
-                src_path,
-                "",
-                config["site_dir"],
-                config["use_directory_urls"],
-                dest_uri="assets/stylesheets/mkdocs_d2_plugin.css",
-            )
-        )
+        files.append(file)
 
 
 def render(
@@ -113,8 +110,6 @@ def render(
     opts: List[str],
 ) -> Tuple[str, bool]:
     is_file = isinstance(source, Path)
-
-    print(f"Rendering {source} with {opts}")
 
     key = ""
     if cache is not None:
@@ -150,8 +145,8 @@ def render(
     stdout = result.stdout.decode().strip()
 
     # D2 uses a hash of diagram structure as a class name used for styling.
-    # This means rendering options do not affect the class name, resulting 
-    # in conflicts if the same diagram is embeded multiple times using 
+    # This means rendering options do not affect the class name, resulting
+    # in conflicts if the same diagram is embeded multiple times using
     # different themes.
     new_class = f"d2-{uuid4().hex}"
     stdout = re.sub(r"d2-\d+", new_class, stdout)
