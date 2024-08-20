@@ -19,7 +19,7 @@ setup(
     license="MIT",
     python_requires=">=3.9",
     install_requires=[
-        "mkdocs>=1.5.0",
+        "mkdocs>=1.6.0",
         "pymdown-extensions>=9.0",
         "pydantic>=2.0",
         "packaging",

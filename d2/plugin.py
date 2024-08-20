@@ -92,11 +92,10 @@ class Plugin(BasePlugin[PluginConfig]):
     def on_files(self, files: Files, config):
         content = importlib_files("d2.css").joinpath("mkdocs_d2_plugin.css").read_text()
         file = File(
-            "mkdocs_d2_plugin.css",
-            "",
+            "assets/stylesheets/mkdocs_d2_plugin.css",
+            None,
             config["site_dir"],
             config["use_directory_urls"],
-            dest_uri="assets/stylesheets/mkdocs_d2_plugin.css",
         )
         file.content_string = content
 
