@@ -7,7 +7,8 @@ A plugin for embedding D2 diagrams in MkDocs.
 
 ## Requirements
 
-* [MkDocs](https://www.mkdocs.org/) >= 1.5.0
+* [Python](https://www.python.org/) >= 3.9
+* [MkDocs](https://www.mkdocs.org/) >= 1.6.0
 * [D2](https://d2lang.com) >= 0.6.3
 
 ## Installation

@@ -54,13 +54,13 @@ class D2ImgTreeprocessor(Treeprocessor):
                     # strip namespace
                     _, _, el.tag = el.tag.rpartition("}")
 
-                elem.clear()
                 elem.tag = "div"
+                elem.clear()
                 elem.set("class", "d2")
 
                 if not cfg.has_dark_theme():
                     elem.append(svg.root)
-                    return
+                    continue
 
                 dark_result, ok = self.renderer(diagram, cfg.opts(dark=True))
                 if not ok:

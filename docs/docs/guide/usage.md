@@ -50,13 +50,13 @@ Diagrams included using image tags support [imports](https://d2lang.com/tour/imp
 
 ````md
 importer.d2
-```d2
+```
 a: @imported
 a -> b
 ```
 
 imported.d2
-```d2
+```
 x: {
     shape: circle
 }
