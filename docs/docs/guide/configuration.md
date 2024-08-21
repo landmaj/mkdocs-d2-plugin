@@ -146,7 +146,7 @@ Bob -> Alice
 #### Rendering specific target
 
 ````md
-```d2 pad="10" scale="1" target="alternative"
+```d2 target="alternative"
 scenarios: {
     main: {
         Bob -> Alice
@@ -159,7 +159,7 @@ scenarios: {
 ```
 ````
 
-```d2 pad="10" scale="1" target="alternative"
+```d2 target="alternative" pad="10" scale="1"
 scenarios: {
     main: {
         Bob -> Alice
@@ -182,20 +182,22 @@ extension to specify configuration options.
 
 Contrary to fenced code blocks, quotes around values are optional. However
 **white space before opening brace is not allowed**. Add space and you will
-se no error but the diagram will be rendered with global configuration only.
+see no error but the diagram will be rendered with global configuration only.
 
 ### Examples
 
 #### Theme and layout
 
-!!! info
-    Change mode to light (:material-brightness-7: button at the top).
-
 ```md
 ![Cloud](cloud.d2){theme=101 layout=elk}
 ```
 
-![Cloud](cloud.d2){theme=101 layout=elk}
+<div markdown="1" class="d2-dark">
+!!! tip
+    Change mode to light (:material-brightness-4: button at the top).
+</div>
+
+![Cloud](cloud.d2){theme=101 layout=elk pad=20 scale=0.8}
 
 #### Dark theme
 
@@ -203,7 +205,9 @@ se no error but the diagram will be rendered with global configuration only.
 ![Cloud](cloud.d2){dark_theme="201"}
 ```
 
-!!! info
-    Change mode to dark (:material-brightness-4: button at the top).
+<div markdown="1" class="d2-light">
+!!! tip
+    Change mode to dark (:material-brightness-7: button at the top).
+</div>
 
-![Cloud](cloud.d2){dark_theme="201"}
+![Cloud](cloud.d2){dark_theme="201" pad="20" scale="0.8"}
