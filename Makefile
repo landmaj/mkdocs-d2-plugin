@@ -4,7 +4,7 @@ clean:
 	rm -rf build dist *.egg-info
 
 build:
-	python3 -m build
+	uvx --from build pyproject-build
 
 upload:
-	python3 -m twine upload dist/*
+	uvx twine upload dist/*
