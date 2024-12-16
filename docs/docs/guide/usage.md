@@ -73,3 +73,28 @@ In MkDocs:
     Diagrams are not re-rendered when an imported file changes. You can either update
     the main diagram (re-render is triggered by modification time, no changes
     are needed) or [disable the cache](configuration.md#cache) altogether.
+
+## Accessibility
+
+All diagrams are accessible by default.
+
+```xml
+<svg aria-label="ALT TEXT" role="img">
+```
+
+The value is taken from an image tag alt text:
+
+```md
+![ALT TEXT](diagram.d2)
+```
+
+Or fenced code block attribute:
+
+````md
+```d2 alt="ALT TEXT"
+shape: sequence_diagram
+A -> B: C
+```
+````
+
+If fenced code block does not have `alt` attribute, default value "Diagram" is used.

@@ -26,6 +26,7 @@ class D2CustomFence:
         md: Markdown,
     ) -> bool:
         options["render"] = falsy(inputs.pop("render", "True"))
+        options["alt"] = inputs.pop("alt", "Diagram")
 
         cfg = self.config.copy()
         cfg.update(**inputs)
@@ -55,7 +56,7 @@ class D2CustomFence:
                 source, language, class_name, options, md, **kwargs
             )
 
-        result, ok = self.renderer(source.encode(), options["opts"])
+        result, _, ok = self.renderer(source.encode(), options["opts"], options["alt"])
         if not ok:
             error(result)
             return fence_code_format(
@@ -65,7 +66,9 @@ class D2CustomFence:
         if "opts_dark" not in options:
             return f'<div class="d2">{result}</div>'
 
-        dark_result, ok = self.renderer(source.encode(), options["opts_dark"])
+        dark_result, _, ok = self.renderer(
+            source.encode(), options["opts_dark"], options["alt"]
+        )
         if not ok:
             error(dark_result)
             return fence_code_format(

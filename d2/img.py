@@ -1,5 +1,4 @@
 import xml.etree.ElementTree as etree
-from io import StringIO
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -36,7 +35,7 @@ class D2ImgTreeprocessor(Treeprocessor):
                 cfg = self.config.copy()
                 cfg.update(elem.attrib)
                 cfg.pop("src")
-                cfg.pop("alt")
+                alt = cfg.pop("alt", "Diagram")
 
                 try:
                     cfg = D2Config(**cfg)
@@ -44,15 +43,10 @@ class D2ImgTreeprocessor(Treeprocessor):
                     error(e)
                     continue
 
-                result, ok = self.renderer(diagram, cfg.opts())
+                result, svg, ok = self.renderer(diagram, cfg.opts(), alt=alt)
                 if not ok:
                     error(result)
                     continue
-
-                svg = etree.iterparse(StringIO(result))
-                for _, el in svg:
-                    # strip namespace
-                    _, _, el.tag = el.tag.rpartition("}")
 
                 elem.tag = "div"
                 elem.clear()
@@ -62,15 +56,12 @@ class D2ImgTreeprocessor(Treeprocessor):
                     elem.append(svg.root)
                     continue
 
-                dark_result, ok = self.renderer(diagram, cfg.opts(dark=True))
+                dark_result, dark_svg, ok = self.renderer(
+                    diagram, cfg.opts(dark=True), alt=alt
+                )
                 if not ok:
                     error(dark_result)
                     continue
-
-                dark_svg = etree.iterparse(StringIO(dark_result))
-                for _, el in dark_svg:
-                    # strip namespace
-                    _, _, el.tag = el.tag.rpartition("}")
 
                 light = etree.Element("div", {"class": "d2-light"})
                 light.append(svg.root)
