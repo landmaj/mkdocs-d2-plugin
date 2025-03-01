@@ -52,8 +52,14 @@ class D2ImgTreeprocessor(Treeprocessor):
                 elem.clear()
                 elem.set("class", "d2")
 
+                new_tab_button = etree.Element("button")
+                new_tab_button.set("class", "d2-button")
+                new_tab_button.set("onclick", f'd2OpenInNewTab("{result}")')
+                new_tab_button.text = "Open diagram in new tab"
+
                 if not cfg.has_dark_theme():
                     elem.append(svg.root)
+                    elem.append(new_tab_button)
                     continue
 
                 dark_result, dark_svg, ok = self.renderer(
@@ -65,10 +71,17 @@ class D2ImgTreeprocessor(Treeprocessor):
 
                 light = etree.Element("div", {"class": "d2-light"})
                 light.append(svg.root)
+                light.append(new_tab_button)
                 elem.append(light)
+
+                dark_new_tab_button = etree.Element("button")
+                dark_new_tab_button.set("class", "d2-button")
+                dark_new_tab_button.set("onclick", f'd2OpenInNewTab("{dark_result}")')
+                dark_new_tab_button.text = "Open diagram in new tab"
 
                 dark = etree.Element("div", {"class": "d2-dark"})
                 dark.append(dark_svg.root)
+                dark.append(dark_new_tab_button)
                 elem.append(dark)
 
 

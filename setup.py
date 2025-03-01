@@ -38,7 +38,10 @@ setup(
         "Programming Language :: Python :: 3.12",
     ],
     packages=find_packages(),
-    package_data={"d2.css": ["mkdocs_d2_plugin.css"]},
+    package_data={
+        "d2.css": ["mkdocs_d2_plugin.css"],
+        "d2.js": ["mkdocs_d2_plugin.js"],
+    },
     include_package_data=True,
     entry_points={
         "mkdocs.plugins": ["d2 = d2.plugin:Plugin"],

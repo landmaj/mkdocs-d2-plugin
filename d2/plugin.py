@@ -84,6 +84,7 @@ class Plugin(BasePlugin[PluginConfig]):
         }
 
         config["extra_css"].append("assets/stylesheets/mkdocs_d2_plugin.css")
+        config["extra_javascript"].append("assets/javascript/mkdocs_d2_plugin.js")
 
         return config
 
@@ -92,16 +93,31 @@ class Plugin(BasePlugin[PluginConfig]):
             self.cache.close()
 
     def on_files(self, files: Files, config):
-        content = importlib_files("d2.css").joinpath("mkdocs_d2_plugin.css").read_text()
-        file = File(
+        # CSS
+        css_content = (
+            importlib_files("d2.css").joinpath("mkdocs_d2_plugin.css").read_text()
+        )
+        css_file = File(
             "assets/stylesheets/mkdocs_d2_plugin.css",
             None,
             config["site_dir"],
             config["use_directory_urls"],
         )
-        file.content_string = content
+        css_file.content_string = css_content
+        files.append(css_file)
 
-        files.append(file)
+        # JS
+        js_content = (
+            importlib_files("d2.js").joinpath("mkdocs_d2_plugin.js").read_text()
+        )
+        js_file = File(
+            "assets/javascript/mkdocs_d2_plugin.js",
+            None,
+            config["site_dir"],
+            config["use_directory_urls"],
+        )
+        js_file.content_string = js_content
+        files.append(js_file)
 
 
 def render(
@@ -166,4 +182,7 @@ def render(
     svg.root.set("role", "img")
     svg.root.set("aria-label", alt)
 
-    return etree.tostring(svg.root, encoding="unicode"), svg, True
+    svg_id = uuid4().hex
+    svg.root.set("id", svg_id)
+
+    return svg_id, svg, True

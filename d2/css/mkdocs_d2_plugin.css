@@ -1,5 +1,22 @@
+.d2,
+.d2-light,
+.d2-dark {
+    display: flex;
+    flex-direction: column;
+}
+
 .d2 a:hover {
     text-decoration: underline
+}
+
+.d2-button {
+    margin: 10px 0;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.d2-button:hover {
+    text-decoration: underline;
 }
 
 [data-md-color-scheme="default"] div.d2-dark {

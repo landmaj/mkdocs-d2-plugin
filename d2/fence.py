@@ -1,3 +1,4 @@
+import xml.etree.ElementTree as etree
 from typing import Any, Dict
 
 from markdown import Markdown
@@ -56,17 +57,29 @@ class D2CustomFence:
                 source, language, class_name, options, md, **kwargs
             )
 
-        result, _, ok = self.renderer(source.encode(), options["opts"], options["alt"])
+        result, svg, ok = self.renderer(
+            source.encode(), options["opts"], options["alt"]
+        )
         if not ok:
             error(result)
             return fence_code_format(
                 source, language, class_name, options, md, **kwargs
             )
 
-        if "opts_dark" not in options:
-            return f'<div class="d2">{result}</div>'
+        elem = etree.Element("div")
+        elem.set("class", "d2")
 
-        dark_result, _, ok = self.renderer(
+        new_tab_button = etree.Element("button")
+        new_tab_button.set("class", "d2-button")
+        new_tab_button.set("onclick", f'd2OpenInNewTab("{result}")')
+        new_tab_button.text = "Open diagram in new tab"
+
+        if "opts_dark" not in options:
+            elem.append(svg.root)
+            elem.append(new_tab_button)
+            return etree.tostring(elem, encoding="utf-8", method="html").decode()
+
+        dark_result, dark_svg, ok = self.renderer(
             source.encode(), options["opts_dark"], options["alt"]
         )
         if not ok:
@@ -75,12 +88,22 @@ class D2CustomFence:
                 source, language, class_name, options, md, **kwargs
             )
 
-        return (
-            '<div class="d2">'
-            f'<div class="d2-light">{result}</div>'
-            f'<div class="d2-dark">{dark_result}</div>'
-            "</div>"
-        )
+        light = etree.Element("div", {"class": "d2-light"})
+        light.append(svg.root)
+        light.append(new_tab_button)
+        elem.append(light)
+
+        dark_new_tab_button = etree.Element("button")
+        dark_new_tab_button.set("class", "d2-button")
+        dark_new_tab_button.set("onclick", f'd2OpenInNewTab("{dark_result}")')
+        dark_new_tab_button.text = "Open diagram in new tab"
+
+        dark = etree.Element("div", {"class": "d2-dark"})
+        dark.append(dark_svg.root)
+        dark.append(dark_new_tab_button)
+        elem.append(dark)
+
+        return etree.tostring(elem, encoding="utf-8", method="html").decode()
 
 
 def falsy(value: str) -> bool:
