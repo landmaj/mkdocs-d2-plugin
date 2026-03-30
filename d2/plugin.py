@@ -22,8 +22,9 @@ from d2 import info, warning
 from d2.config import PluginConfig
 from d2.fence import D2CustomFence
 
+MKDOCS_D2_CSS = "mkdocs_d2_plugin.css"
 REQUIRED_VERSION = version.parse("0.6.3")
-
+STYLESHEET_LOCATION = "assets/stylesheets"
 
 class Plugin(BasePlugin[PluginConfig]):
     def on_config(self, config: MkDocsConfig) -> Optional[MkDocsConfig]:
@@ -83,7 +84,7 @@ class Plugin(BasePlugin[PluginConfig]):
             "renderer": renderer,
         }
 
-        config["extra_css"].append("assets/stylesheets/mkdocs_d2_plugin.css")
+        config["extra_css"].append(str(Path(STYLESHEET_LOCATION) / MKDOCS_D2_CSS))
 
         return config
 
@@ -92,15 +93,12 @@ class Plugin(BasePlugin[PluginConfig]):
             self.cache.close()
 
     def on_files(self, files: Files, config):
-        content = importlib_files("d2.css").joinpath("mkdocs_d2_plugin.css").read_text()
         file = File(
-            "assets/stylesheets/mkdocs_d2_plugin.css",
-            None,
-            config["site_dir"],
+            "mkdocs_d2_plugin.css",
+            importlib_files("d2.css"),
+            Path(config["site_dir"]) / "assets/stylesheets",
             config["use_directory_urls"],
         )
-        file.content_string = content
-
         files.append(file)
 
 
