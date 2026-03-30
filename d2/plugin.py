@@ -5,7 +5,7 @@ import subprocess
 import xml.etree.ElementTree as etree
 from functools import partial
 from hashlib import sha1
-from importlib.resources import files as importlib_files
+from importlib.resources import path as importlib_path
 from io import StringIO
 from pathlib import Path
 from typing import List, MutableMapping, Optional, Tuple, Union
@@ -93,12 +93,14 @@ class Plugin(BasePlugin[PluginConfig]):
             self.cache.close()
 
     def on_files(self, files: Files, config):
-        file = File(
-            "mkdocs_d2_plugin.css",
-            importlib_files("d2.css"),
-            Path(config["site_dir"]) / "assets/stylesheets",
-            config["use_directory_urls"],
-        )
+        with importlib_path(__name__, "css") as css_path:
+            print(f"Copying stylesheet from {css_path} to {config['site_dir']}")
+            file = File(
+                MKDOCS_D2_CSS,
+                css_path,
+                Path(config["site_dir"]) / STYLESHEET_LOCATION,
+                config["use_directory_urls"],
+            )
         files.append(file)
 
 
