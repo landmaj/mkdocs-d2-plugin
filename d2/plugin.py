@@ -18,13 +18,14 @@ from mkdocs.structure.files import File, Files
 from mkdocs.utils.yaml import RelativeDirPlaceholder
 from packaging import version
 
-from d2 import info, warning
+from d2 import debug, info, warning
 from d2.config import PluginConfig
 from d2.fence import D2CustomFence
 
-MKDOCS_D2_CSS = "mkdocs_d2_plugin.css"
 REQUIRED_VERSION = version.parse("0.6.3")
+MKDOCS_D2_CSS = "mkdocs_d2_plugin.css"
 STYLESHEET_LOCATION = "assets/stylesheets"
+
 
 class Plugin(BasePlugin[PluginConfig]):
     def on_config(self, config: MkDocsConfig) -> Optional[MkDocsConfig]:
@@ -93,11 +94,11 @@ class Plugin(BasePlugin[PluginConfig]):
             self.cache.close()
 
     def on_files(self, files: Files, config):
-        with importlib_path(__name__, "css") as css_path:
-            print(f"Copying stylesheet from {css_path} to {config['site_dir']}")
+        with importlib_path("d2", "css") as css_dir:
+            debug(f"Copying {MKDOCS_D2_CSS} from {css_dir} to {config['site_dir']}")
             file = File(
                 MKDOCS_D2_CSS,
-                css_path,
+                css_dir,
                 Path(config["site_dir"]) / STYLESHEET_LOCATION,
                 config["use_directory_urls"],
             )
