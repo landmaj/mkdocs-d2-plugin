@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- CSS file is now copied, improving compatibility with [some](https://github.com/oprypin/mkdocs-same-dir) other plugins (thanks @watermarkhu)
 - Minimum required Python version is now 3.10
 
 ## [1.6.0] - 2024-12-16
