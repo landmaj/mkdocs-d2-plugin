@@ -1,2 +1,2 @@
-mkdocs-material
-mkdocs-d2-plugin
+mkdocs-material~=9.7
+git+https://github.com/landmaj/mkdocs-d2-plugin.git@master
