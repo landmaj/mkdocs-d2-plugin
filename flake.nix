@@ -20,10 +20,11 @@
         default = pkgs.mkShell {
           packages = with pkgs; [
               python310
+              d2
+              nil
+              pre-commit
               ruff
               uv
-              pre-commit
-              nil
             ];
 
           shellHook = ''
